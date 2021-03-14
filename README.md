@@ -6,6 +6,12 @@ Barlow lens increases your magnification and let's you see the stars ✨
 
 Barlow lens is a lens for records that makes it easy to zoom deep into the record.
 
+## Installation
+
+```bash
+spago install barlow-lens
+```
+
 ## Usage 
 
 ```purescript
