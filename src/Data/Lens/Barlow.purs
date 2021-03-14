@@ -20,28 +20,28 @@ foreign import data TNil :: TList
 
 foreign import data TCons :: TElem -> TList -> TList
 
-class Parse (string :: Symbol) (attributes :: TList) | string -> attributes
+class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attributes
 
-class Parse1 (head :: Symbol) (tail :: Symbol) (out :: TList) | head tail -> out
+class Parse1Symbol (head :: Symbol) (tail :: Symbol) (out :: TList) | head tail -> out
 
-instance parse1Nil :: Parse1 a "" (TCons (Field a) TNil)
+instance parse1Nil :: Parse1Symbol a "" (TCons (Field a) TNil)
 else instance parse1Pc ::
-  ( Parse s rest
+  ( ParseSymbol s rest
     ) =>
-  Parse1 "." s (TCons (Field "") rest)
+  Parse1Symbol "." s (TCons (Field "") rest)
 else instance parse1Other ::
-  ( Parse s (TCons (Field acc) r)
+  ( ParseSymbol s (TCons (Field acc) r)
   , Symbol.Cons o acc rest
   ) =>
-  Parse1 o s (TCons (Field rest) r)
+  Parse1Symbol o s (TCons (Field rest) r)
 
 instance parseNil ::
-  Parse "" (TCons (Field "") TNil)
+  ParseSymbol "" (TCons (Field "") TNil)
 else instance parseCons ::
   ( Symbol.Cons h t string
-  , Parse1 h t fl
+  , Parse1Symbol h t fl
   ) =>
-  Parse string fl
+  ParseSymbol string fl
 
 class ConstructBarlow (attributes :: TList) input output | attributes -> input output where
   constructBarlow :: Proxy attributes -> Lens' input output
@@ -73,7 +73,7 @@ class Barlow (string :: Symbol) input output | string -> input output where
   barlow :: Proxy string -> Lens' input output
 
 instance barlowInstance ::
-  ( Parse string attributes
+  ( ParseSymbol string attributes
   , ConstructBarlow attributes { | input } output
   ) =>
   Barlow string { | input } output where
