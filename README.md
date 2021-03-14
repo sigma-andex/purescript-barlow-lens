@@ -22,7 +22,7 @@ view (barlow (key :: _ "zodiac.virgo.alpha")) sky
 over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
 -- { zodiac: { virgo: { alpha: "SPICA" } } }
     
--- view (barlow (key :: _ "zodiac.virgo.alTYPOpha")) sky 
+-- view (barlow (key :: _ "zodiac.virgo.alfa")) sky 
 -- doesn't compile
 ```
 

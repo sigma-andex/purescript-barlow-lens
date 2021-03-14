@@ -61,6 +61,15 @@ else instance constructBarlowCons ::
   constructBarlow proxy = prop (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
 
 class Barlow (string :: Symbol) input output | string -> input output where
+  -- | Type-safe lens for zooming into a deeply nested record
+  -- |
+  -- | ```purescript 
+  -- | sky = { zodiac: { virgo: { alpha: "Spica" } } }
+  -- | view (barlow (key :: _ "zodiac.virgo.alpha")) sky
+  -- | -- Spica 
+  -- | over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
+  -- | -- { zodiac: { virgo: { alpha: "SPICA" } } }
+  -- | ```
   barlow :: Proxy string -> Lens' input output
 
 instance barlowInstance ::
