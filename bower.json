@@ -1,0 +1,26 @@
+{
+    "name": "purescript-barlow-lens",
+    "license": [
+        "MIT-0"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sigma-andex/purescript-barlow-lens.git"
+    },
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "output"
+    ],
+    "dependencies": {
+        "purescript-console": "^v5.0.0",
+        "purescript-debug": "^v4.0.1",
+        "purescript-effect": "^v3.0.0",
+        "purescript-profunctor-lenses": "^v7.0.0",
+        "purescript-psci-support": "^v5.0.0",
+        "purescript-spec": "^v5.0.0",
+        "purescript-spec-discovery": "^v6.0.0",
+        "purescript-typelevel-prelude": "^v6.0.0"
+    }
+}
