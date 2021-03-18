@@ -32,6 +32,24 @@ over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
 -- doesn't compile
 ```
 
+### Deep sky 🌌
+
+Now you can also zoom into Maybes! 
+
+```purescript 
+sky =
+  { zodiac:
+      Just
+        { virgo:
+            Just
+              { alpha: Just "Spica"
+              }
+        }
+  }
+
+preview (barlow (key :: _ "zodiac?.virgo?.alpha?")) sky
+```
+
 ## Credits
 
 This lib was heavily inspired by this incredible [blog post](https://blog.csongor.co.uk/purescript-safe-printf/#The%20problem).
