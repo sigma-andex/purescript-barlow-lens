@@ -1,6 +1,6 @@
 module Data.Lens.BarloSpec where
 
-import Data.Lens (over, view)
+import Data.Lens (over, preview, view)
 import Data.Lens.Barlow (barlow, key)
 import Data.Maybe (Maybe(..))
 import Data.String (toUpper)
@@ -45,7 +45,7 @@ spec =
           actual = over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
         actual `shouldEqual` expected
 
-      it "should view into a record with maybe" do
+      it "should view into a record with Maybe" do
         let
           sky =
             { zodiac:
@@ -55,5 +55,5 @@ spec =
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo?.alpha")) sky
-        actual `shouldEqual` "Spica"
+          actual = preview (barlow (key :: _ "zodiac.virgo?.alpha")) sky
+        actual `shouldEqual` (Just "Spica")
