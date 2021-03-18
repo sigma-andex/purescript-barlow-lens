@@ -8,17 +8,19 @@ import Prim.Symbol as Symbol
 import Type.Prelude (class IsSymbol)
 import Type.Proxy (Proxy(..))
 
--- typelevel element 
-data TElem
-
-foreign import data Field :: Symbol -> TElem
-
 -- typelevel list
 data TList
 
 foreign import data TNil :: TList
 
-foreign import data TCons :: TElem -> TList -> TList
+foreign import data TCons :: forall k. k  -> TList -> TList
+
+-- typelevel element 
+data TElem
+
+foreign import data QMark :: TElem 
+foreign import data Field :: Symbol -> TElem
+
 
 class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attributes
 
@@ -29,6 +31,13 @@ else instance parse1Pc ::
   ( ParseSymbol s rest
     ) =>
   Parse1Symbol "." s (TCons (Field "") rest)
+
+else instance parse1PcQ ::
+  ( ParseSymbol s rest
+    ) =>
+  Parse1Symbol "?" s (TCons (Field "") (TCons QMark rest))
+
+
 else instance parse1Other ::
   ( ParseSymbol s (TCons (Field acc) r)
   , Symbol.Cons o acc rest
@@ -38,7 +47,7 @@ else instance parse1Other ::
 instance parseNil ::
   ParseSymbol "" (TCons (Field "") TNil)
 else instance parseCons ::
-  ( Symbol.Cons h t string
+  ( Symbol.Cons h t string 
   , Parse1Symbol h t fl
   ) =>
   ParseSymbol string fl
