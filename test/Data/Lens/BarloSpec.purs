@@ -44,16 +44,17 @@ spec =
 
           actual = over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
         actual `shouldEqual` expected
-
       it "should view into a record with Maybe" do
         let
           sky =
             { zodiac:
-                { virgo: Just 
-                    { alpha: "Spica"
-                    }
-                }
+                Just
+                  { virgo:
+                      Just
+                        { alpha: "Spica"
+                        }
+                  }
             }
 
-          actual = preview (barlow (key :: _ "zodiac.virgo?.alpha")) sky
+          actual = preview (barlow (key :: _ "zodiac?.virgo?.alpha")) sky
         actual `shouldEqual` (Just "Spica")
