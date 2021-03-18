@@ -58,3 +58,27 @@ spec =
 
           actual = preview (barlow (key :: _ "zodiac?.virgo?.alpha")) sky
         actual `shouldEqual` (Just "Spica")
+      it "should modify a record with Maybe" do
+        let
+          sky =
+            { zodiac:
+                Just
+                  { virgo:
+                      Just
+                        { alpha: "Spica"
+                        }
+                  }
+            }
+
+          expected =
+            { zodiac:
+                Just
+                  { virgo:
+                      Just
+                        { alpha: "SPICA"
+                        }
+                  }
+            }
+
+          actual = over (barlow (key :: _ "zodiac?.virgo?.alpha")) toUpper sky
+        actual `shouldEqual` expected

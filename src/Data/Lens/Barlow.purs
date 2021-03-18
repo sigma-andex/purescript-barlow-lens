@@ -1,8 +1,7 @@
 module Data.Lens.Barlow where
 
 import Prelude
-
-import Data.Lens (Lens', Optic', _Just)
+import Data.Lens (Optic', _Just)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe)
 import Data.Profunctor.Choice (class Choice)
@@ -17,14 +16,14 @@ data TList
 
 foreign import data TNil :: TList
 
-foreign import data TCons :: forall k. k  -> TList -> TList
+foreign import data TCons :: forall k. k -> TList -> TList
 
 -- typelevel element 
 data TElem
 
-foreign import data QMark :: TElem 
-foreign import data Field :: Symbol -> TElem
+foreign import data QMark :: TElem
 
+foreign import data Field :: Symbol -> TElem
 
 class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attributes
 
@@ -39,8 +38,6 @@ else instance parse1PQ ::
   ( ParseSymbol s rest
     ) =>
   Parse1Symbol "?" s (TCons (Field "") (TCons QMark rest))
-
-
 else instance parse1Other ::
   ( ParseSymbol s (TCons (Field acc) r)
   , Symbol.Cons o acc rest
@@ -50,7 +47,7 @@ else instance parse1Other ::
 instance parseNil ::
   ParseSymbol "" (TCons (Field "") TNil)
 else instance parseCons ::
-  ( Symbol.Cons h t string 
+  ( Symbol.Cons h t string
   , Parse1Symbol h t fl
   ) =>
   ParseSymbol string fl
@@ -61,30 +58,28 @@ class ConstructBarlow (attributes :: TList) p input output | attributes -> input
 instance constructBarlowNil ::
   ( IsSymbol sym
   , Row.Cons sym output rc x
-  , Strong p 
+  , Strong p
   ) =>
   ConstructBarlow (TCons (Field sym) TNil) p (Record x) output where
   constructBarlow proxy = prop (Proxy :: Proxy sym)
-
-else instance constructBarlowConsQ :: 
+else instance constructBarlowConsQ ::
   ( IsSymbol sym
-  , ConstructBarlow rest p  restR output
+  , ConstructBarlow rest p restR output
   , Row.Cons sym (Maybe restR) rb rl
-  , Strong p 
-  , Choice p 
+  , Strong p
+  , Choice p
   ) =>
-  ConstructBarlow 
-    (TCons (Field sym) (TCons QMark (TCons (Field "") rest))) p
-                                     { | rl }
-                                     output where
+  ConstructBarlow
+    (TCons (Field sym) (TCons QMark (TCons (Field "") rest)))
+    p
+    { | rl }
+    output where
   constructBarlow proxy = prop (Proxy :: Proxy sym) <<< _Just <<< constructBarlow (Proxy :: Proxy rest)
-
-
 else instance constructBarlowCons ::
   ( IsSymbol sym
   , ConstructBarlow rest p restR output
   , Row.Cons sym restR rb rl
-  , Strong p 
+  , Strong p
   ) =>
   ConstructBarlow (TCons (Field sym) rest) p { | rl } output where
   constructBarlow proxy = prop (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
