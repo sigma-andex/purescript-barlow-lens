@@ -50,14 +50,13 @@ spec =
             { zodiac:
                 Just
                   { virgo:
-                     Just
-                        --{ alpha: Just "Spica"
-                          { alpha:  "Spica"
+                      Just
+                        { alpha: Just "Spica"
                         }
                   }
             }
 
-          actual = preview (barlow (key :: _ "zodiac?.virgo?.alpha")) sky
+          actual = preview (barlow (key :: _ "zodiac?.virgo?.alpha?")) sky
         actual `shouldEqual` (Just "Spica")
       it "should modify a record with Maybe" do
         let

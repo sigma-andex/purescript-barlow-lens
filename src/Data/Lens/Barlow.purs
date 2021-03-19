@@ -44,7 +44,10 @@ else instance parse1Other ::
   ) =>
   Parse1Symbol o s (TCons (Field rest) r)
 
-instance parseNil ::
+
+instance parseNilQ ::
+  ParseSymbol "?" (TCons (Field "") (TCons QMark TNil))
+else instance parseNil ::
   ParseSymbol "" (TCons (Field "") TNil)
 else instance parseCons ::
   ( Symbol.Cons h t string
@@ -55,6 +58,7 @@ else instance parseCons ::
 class ConstructBarlow (attributes :: TList) p input output | attributes -> input output where
   constructBarlow :: Proxy attributes -> Optic' p input output
 
+
 instance constructBarlowNil ::
   ( IsSymbol sym
   , Row.Cons sym output rc x
@@ -62,6 +66,12 @@ instance constructBarlowNil ::
   ) =>
   ConstructBarlow (TCons (Field sym) TNil) p (Record x) output where
   constructBarlow proxy = prop (Proxy :: Proxy sym)
+
+else instance constructBarlowNilQ ::
+  ( Choice p
+  ) =>
+  ConstructBarlow (TCons QMark TNil) p (Maybe output) output where
+  constructBarlow proxy = _Just
 else instance constructBarlowEnd ::
   ( Strong p
     ) =>
