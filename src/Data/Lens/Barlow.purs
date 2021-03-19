@@ -21,7 +21,7 @@ foreign import data TCons :: forall k. k -> TList -> TList
 -- typelevel element 
 data TElem
 
-foreign import data QMark :: TElem
+foreign import data QuestionMark :: TElem
 
 foreign import data Field :: Symbol -> TElem
 
@@ -34,18 +34,18 @@ else instance parse1Dot ::
   ( ParseSymbol s rest
     ) =>
   Parse1Symbol "." s (TCons (Field "") rest)
-else instance parse1QMark ::
+else instance parse1QuestionMark ::
   ( ParseSymbol s rest
     ) =>
-  Parse1Symbol "?" s (TCons (Field "") (TCons QMark rest))
+  Parse1Symbol "?" s (TCons (Field "") (TCons QuestionMark rest))
 else instance parse1Other ::
   ( ParseSymbol s (TCons (Field acc) r)
   , Symbol.Cons o acc rest
   ) =>
   Parse1Symbol o s (TCons (Field rest) r)
 
-instance parseNilQMark ::
-  ParseSymbol "?" (TCons (Field "") (TCons QMark TNil))
+instance parseNilQuestionMark ::
+  ParseSymbol "?" (TCons (Field "") (TCons QuestionMark TNil))
 else instance parseNil ::
   ParseSymbol "" (TCons (Field "") TNil)
 else instance parseCons ::
@@ -67,20 +67,20 @@ instance constructBarlowNil ::
   constructBarlow proxy = prop (Proxy :: Proxy sym)
 
 -- Nil instance for question mark 
-else instance constructBarlowNilQMark ::
+else instance constructBarlowNilQuestionMark ::
   ( Choice p
     ) =>
-  ConstructBarlow (TCons QMark TNil) p (Maybe output) output where
+  ConstructBarlow (TCons QuestionMark TNil) p (Maybe output) output where
   constructBarlow proxy = _Just
 
 -- Cons instance for question mark
-else instance constructBarlowConsQMark ::
+else instance constructBarlowConsQuestionMark ::
   ( ConstructBarlow rest p restR output
   , Strong p
   , Choice p
   ) =>
   ConstructBarlow
-    (TCons QMark (TCons (Field "") rest))
+    (TCons QuestionMark (TCons (Field "") rest))
     p
     (Maybe restR)
     output where
