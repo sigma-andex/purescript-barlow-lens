@@ -1,7 +1,7 @@
 module Data.Lens.Barlow where
 
 import Prelude
-import Data.Lens (Optic', _Just, iso)
+import Data.Lens (Optic', _Just)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe)
 import Data.Profunctor.Choice (class Choice)
