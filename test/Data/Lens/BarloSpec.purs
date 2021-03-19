@@ -95,3 +95,40 @@ spec =
 
           actual = preview (barlow (key :: _ "zodiac?.virgo.alpha")) sky
         actual `shouldEqual` (Just "Spica")
+      it "should view into parts of a record" do
+        let
+          sky =
+            { zodiac:
+                Just
+                  { virgo:
+                      { alpha: "Spica"
+                      }
+                  }
+            }
+
+          expected =
+            { virgo:
+                { alpha: "Spica"
+                }
+            }
+
+          actual = preview (barlow (key :: _ "zodiac?")) sky
+        actual `shouldEqual` (Just expected)
+      it "should view into parts of a record (2)" do
+        let
+          sky =
+            { zodiac:
+                Just
+                  { virgo:
+                      Just
+                        { alpha: "Spica"
+                        }
+                  }
+            }
+
+          expected =
+            { alpha: "Spica"
+            }
+
+          actual = preview (barlow (key :: _ "zodiac?.virgo?")) sky
+        actual `shouldEqual` (Just expected)
