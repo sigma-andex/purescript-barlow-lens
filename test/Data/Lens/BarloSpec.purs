@@ -65,7 +65,7 @@ spec =
                 Just
                   { virgo:
                       Just
-                        { alpha: "Spica"
+                        { alpha: Just "Spica"
                         }
                   }
             }
@@ -75,10 +75,10 @@ spec =
                 Just
                   { virgo:
                       Just
-                        { alpha: "SPICA"
+                        { alpha: Just "SPICA"
                         }
                   }
             }
 
-          actual = over (barlow (key :: _ "zodiac?.virgo?.alpha")) toUpper sky
+          actual = over (barlow (key :: _ "zodiac?.virgo?.alpha?")) toUpper sky
         actual `shouldEqual` expected
