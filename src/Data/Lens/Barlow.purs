@@ -30,11 +30,11 @@ class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attribute
 class Parse1Symbol (head :: Symbol) (tail :: Symbol) (out :: TList) | head tail -> out
 
 instance parse1Nil :: Parse1Symbol a "" (TCons (Field a) TNil)
-else instance parse1Pc ::
+else instance parse1Dot ::
   ( ParseSymbol s rest
     ) =>
   Parse1Symbol "." s (TCons (Field "") rest)
-else instance parse1PQ ::
+else instance parse1QMark ::
   ( ParseSymbol s rest
     ) =>
   Parse1Symbol "?" s (TCons (Field "") (TCons QMark rest))
@@ -45,7 +45,7 @@ else instance parse1Other ::
   Parse1Symbol o s (TCons (Field rest) r)
 
 
-instance parseNilQ ::
+instance parseNilQMark ::
   ParseSymbol "?" (TCons (Field "") (TCons QMark TNil))
 else instance parseNil ::
   ParseSymbol "" (TCons (Field "") TNil)
@@ -67,7 +67,7 @@ instance constructBarlowNil ::
   ConstructBarlow (TCons (Field sym) TNil) p (Record x) output where
   constructBarlow proxy = prop (Proxy :: Proxy sym)
 
-else instance constructBarlowNilQ ::
+else instance constructBarlowNilQMark ::
   ( Choice p
   ) =>
   ConstructBarlow (TCons QMark TNil) p (Maybe output) output where
@@ -77,7 +77,7 @@ else instance constructBarlowEnd ::
     ) =>
   ConstructBarlow TNil p output output where
   constructBarlow proxy = iso identity identity
-else instance constructBarlowQ ::
+else instance constructBarlowConsQMark ::
   ( ConstructBarlow rest p restR output
   , Strong p
   , Choice p
