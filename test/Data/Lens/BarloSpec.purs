@@ -50,8 +50,9 @@ spec =
             { zodiac:
                 Just
                   { virgo:
-                      Just
-                        { alpha: "Spica"
+                     Just
+                        --{ alpha: Just "Spica"
+                          { alpha:  "Spica"
                         }
                   }
             }

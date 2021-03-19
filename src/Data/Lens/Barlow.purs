@@ -1,7 +1,7 @@
 module Data.Lens.Barlow where
 
 import Prelude
-import Data.Lens (Optic', _Just)
+import Data.Lens (Optic', _Just, iso)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe)
 import Data.Profunctor.Choice (class Choice)
@@ -62,19 +62,22 @@ instance constructBarlowNil ::
   ) =>
   ConstructBarlow (TCons (Field sym) TNil) p (Record x) output where
   constructBarlow proxy = prop (Proxy :: Proxy sym)
-else instance constructBarlowConsQ ::
-  ( IsSymbol sym
-  , ConstructBarlow rest p restR output
-  , Row.Cons sym (Maybe restR) rb rl
+else instance constructBarlowEnd ::
+  ( Strong p
+    ) =>
+  ConstructBarlow TNil p output output where
+  constructBarlow proxy = iso identity identity
+else instance constructBarlowQ ::
+  ( ConstructBarlow rest p restR output
   , Strong p
   , Choice p
   ) =>
   ConstructBarlow
-    (TCons (Field sym) (TCons QMark (TCons (Field "") rest)))
+    (TCons QMark (TCons (Field "") rest))
     p
-    { | rl }
+    (Maybe restR)
     output where
-  constructBarlow proxy = prop (Proxy :: Proxy sym) <<< _Just <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlow proxy = _Just <<< constructBarlow (Proxy :: Proxy rest)
 else instance constructBarlowCons ::
   ( IsSymbol sym
   , ConstructBarlow rest p restR output
