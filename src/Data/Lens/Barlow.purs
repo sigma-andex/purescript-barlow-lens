@@ -20,7 +20,7 @@ foreign import data TNil :: TList
 
 foreign import data TCons :: forall k. k -> TList -> TList
 
--- adt representing the different types of lenses at the type level
+-- ADT representing the different types of lenses at the type level
 data LensType
 
 foreign import data QuestionMark :: LensType
