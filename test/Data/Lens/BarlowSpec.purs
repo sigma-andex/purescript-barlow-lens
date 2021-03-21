@@ -206,6 +206,32 @@ spec =
 
           actual = over (barlow (key :: _ "zodiac>.virgo?.alpha<")) toUpper sky
         actual `shouldEqual` expected
+      it "should modify a record with mixed Just and Either (2)" do
+        let
+          -- type annotation necessary in this test for Show 
+          sky :: { zodiac :: Either String (Maybe { virgo :: Maybe (Either Int { alpha :: Maybe (Either String Int) }) }) }
+          sky =
+            { zodiac:
+                Right (
+                  Just { virgo:
+                      Just
+                        (Right { alpha: Just (Left "Spica") })
+                  }
+                )
+            }
+
+          expected =
+            { zodiac:
+                Right (
+                  Just { virgo:
+                      Just
+                        (Right { alpha: Just (Left "SPICA") })
+                  }
+                )
+            }
+
+          actual = over (barlow (key :: _ "zodiac>?.virgo?>.alpha?<")) toUpper sky
+        actual `shouldEqual` expected
       it "should modify a record with Array" do
         let
           sky =
