@@ -34,7 +34,7 @@ over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
 
 ### Deep sky 🌌
 
-Now you can also zoom into Maybes! 
+Now you can also zoom into `Maybe`s using `?`...
 
 ```purescript 
 sky =
@@ -48,6 +48,58 @@ sky =
   }
 
 preview (barlow (key :: _ "zodiac?.virgo?.alpha?")) sky
+```
+... and `Either`s using `<` for `Left` and `>` for `Right`...
+
+```purescript 
+sky =
+  { zodiac:
+      Right
+        { virgo:
+            Just
+              { alpha: Left "Spica"
+              }
+        }
+  }
+
+preview (barlow (key :: _ "zodiac>.virgo?.alpha<")) sky
+```
+
+... and `Array`s (and other `Traversable`s) using `+`
+
+```purescript 
+
+sky =
+  { zodiac:
+      [ { virgo:
+            Just
+              { star: "Spica"
+              }
+        }
+      , { virgo:
+            Just
+              { star: "Serpentis"
+              }
+        }
+      ]
+  }
+
+expected =
+  { zodiac:
+      [ { virgo:
+            Just
+              { star: "SPICA"
+              }
+        }
+      , { virgo:
+            Just
+              { star: "SERPENTIS"
+              }
+        }
+      ]
+  }
+
+over (barlow (key :: _ "zodiac+.virgo?.star")) toUpper sky
 ```
 
 ## Credits
