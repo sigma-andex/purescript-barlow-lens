@@ -3,6 +3,7 @@
   [ "console"
   , "debug"
   , "effect"
+  , "foldable-traversable"
   , "profunctor-lenses"
   , "psci-support"
   , "spec"
