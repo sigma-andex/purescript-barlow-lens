@@ -84,21 +84,6 @@ sky =
       ]
   }
 
-expected =
-  { zodiac:
-      [ { virgo:
-            Just
-              { star: "SPICA"
-              }
-        }
-      , { virgo:
-            Just
-              { star: "SERPENTIS"
-              }
-        }
-      ]
-  }
-
 over (barlow (key :: _ "zodiac+.virgo?.star")) toUpper sky
 ```
 
