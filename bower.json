@@ -17,6 +17,7 @@
         "purescript-console": "^v5.0.0",
         "purescript-debug": "^v4.0.1",
         "purescript-effect": "^v3.0.0",
+        "purescript-foldable-traversable": "^v5.0.0",
         "purescript-profunctor-lenses": "^v7.0.0",
         "purescript-psci-support": "^v5.0.0",
         "purescript-spec": "^v5.0.0",
