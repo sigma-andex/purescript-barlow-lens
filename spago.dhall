@@ -1,7 +1,6 @@
 { name = "barlow-lens"
 , dependencies =
   [ "console"
-  , "debug"
   , "effect"
   , "foldable-traversable"
   , "profunctor-lenses"

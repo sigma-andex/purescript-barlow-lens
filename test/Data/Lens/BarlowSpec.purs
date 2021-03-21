@@ -240,3 +240,38 @@ spec =
 
           actual = over (barlow (key :: _ "zodiac+.virgo?.star")) toUpper sky
         actual `shouldEqual` expected
+      
+      it "should modify a record with Array (2)" do
+        let
+          sky =
+            { zodiac:
+                [ { virgo:
+                      Just
+                        { star: Left "Spica"
+                        }
+                  }
+                , { virgo:
+                      Just
+                        { star: Right "Serpentis"
+                        }
+                  }
+                ]
+            }
+
+          expected =
+            { zodiac:
+                [ { virgo:
+                      Just
+                        { star: Left "Spica"
+                        }
+                  }
+                , { virgo:
+                      Just
+                        { star: Right "SERPENTIS"
+                        }
+                  }
+                ]
+            }
+
+          actual = over (barlow (key :: _ "zodiac+.virgo?.star>")) toUpper sky
+        actual `shouldEqual` expected
