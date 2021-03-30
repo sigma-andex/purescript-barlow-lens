@@ -1,10 +1,13 @@
 module Data.Lens.Barlow where
 
 import Prelude
+
 import Data.Either (Either)
 import Data.Lens (class Wander, Optic', _Just, _Left, _Right, traversed)
+import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe)
+import Data.Newtype (class Newtype)
 import Data.Profunctor.Choice (class Choice)
 import Data.Profunctor.Strong (class Strong)
 import Data.Traversable (class Traversable)
@@ -30,6 +33,8 @@ foreign import data RightArrow :: LensType
 foreign import data LeftArrow :: LensType
 
 foreign import data Plus :: LensType
+
+foreign import data ExclamationMark :: LensType
 
 foreign import data RecordField :: Symbol -> LensType
 
@@ -58,6 +63,10 @@ else instance parse1Plus ::
   ( ParseSymbol s rest
     ) =>
   Parse1Symbol "+" s (TCons (RecordField "") (TCons Plus rest))
+else instance parse1ExclamationMark ::
+  ( ParseSymbol s rest
+    ) =>
+  Parse1Symbol "!" s (TCons (RecordField "") (TCons ExclamationMark rest))
 else instance parse1Other ::
   ( ParseSymbol s (TCons (RecordField acc) r)
   , Symbol.Cons o acc rest
@@ -72,6 +81,8 @@ else instance parseNilLeftArrow ::
   ParseSymbol "<" (TCons (RecordField "") (TCons LeftArrow TNil))
 else instance parseNilPlus ::
   ParseSymbol "+" (TCons (RecordField "") (TCons Plus TNil))
+else instance parseNilExclamationMark ::
+  ParseSymbol "!" (TCons (RecordField "") (TCons ExclamationMark TNil))
 else instance parseNil ::
   ParseSymbol "" (TCons (RecordField "") TNil)
 else instance parseCons ::
@@ -116,6 +127,13 @@ else instance constructBarlowNilPlus ::
   ) =>
   ConstructBarlow (TCons Plus TNil) p (t output) output where
   constructBarlow proxy = traversed
+-- Nil instance for exclamation mark  
+else instance constructBarlowNilExclamationMark ::
+  ( Choice p
+  , Newtype nt output
+    ) =>
+  ConstructBarlow (TCons ExclamationMark TNil) p nt output where
+  constructBarlow proxy = _Newtype
 -- Cons instance for question mark
 else instance constructBarlowConsQuestionMark ::
   ( ConstructBarlow rest p restR output
@@ -165,6 +183,19 @@ else instance constructBarlowConsPlus ::
     (t restR)
     output where
   constructBarlow proxy = traversed <<< constructBarlow (Proxy :: Proxy rest)
+-- Cons instance for Newtype
+else instance constructBarlowConsExclamationMark ::
+  ( ConstructBarlow rest p restR output
+  , Newtype nt restR
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlow
+    (TCons ExclamationMark (TCons (RecordField "") rest))
+    p
+    nt
+    output where
+  constructBarlow proxy = _Newtype <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for record selector
 else instance constructBarlowCons ::
   ( IsSymbol sym

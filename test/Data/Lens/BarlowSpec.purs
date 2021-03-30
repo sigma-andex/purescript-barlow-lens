@@ -4,10 +4,17 @@ import Data.Either (Either(..))
 import Data.Lens (over, preview, view)
 import Data.Lens.Barlow (barlow, key)
 import Data.Maybe (Maybe(..))
+import Data.Newtype (class Newtype)
 import Data.String (toUpper)
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
+
+newtype AlphaR = AlphaR { alpha :: String }
+instance alphaRNT :: Newtype AlphaR { alpha :: String }
+
+newtype Alpha = Alpha String
+instance alphaNT :: Newtype Alpha String
 
 spec :: Spec Unit
 spec =
@@ -301,3 +308,29 @@ spec =
 
           actual = over (barlow (key :: _ "zodiac+.virgo?.star>")) toUpper sky
         actual `shouldEqual` expected
+      it "should view into a record with Newtype" do
+        let
+          sky =
+            { zodiac:
+                Just
+                  { virgo:
+                      AlphaR { alpha: "Spica"
+                      }
+                  }
+            }
+
+          actual = preview (barlow (key :: _ "zodiac?.virgo!.alpha")) sky
+        actual `shouldEqual` (Just "Spica")
+      it "should view into a record with Newtype (2)" do
+        let
+          sky =
+            { zodiac:
+                Just
+                  { virgo:
+                      { alpha: Alpha "Spica"
+                      }
+                  }
+            }
+
+          actual = preview (barlow (key :: _ "zodiac?.virgo.alpha!")) sky
+        actual `shouldEqual` (Just "Spica")
