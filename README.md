@@ -65,7 +65,7 @@ sky =
 preview (barlow (key :: _ "zodiac>.virgo?.alpha<")) sky
 ```
 
-... and `Array`s (and other `Traversable`s) using `+`
+... and `Array`s (and other `Traversable`s) using `+` ...
 
 ```purescript 
 
@@ -85,6 +85,24 @@ sky =
   }
 
 over (barlow (key :: _ "zodiac+.virgo?.star")) toUpper sky
+```
+
+... and `Newtype`s using `!`
+
+```purescript
+newtype Alpha = Alpha { alpha :: String }
+instance alphaNT :: Newtype Alpha { alpha :: String
+
+sky =
+  { zodiac:
+      Just
+        { virgo:
+            Alpha { alpha: "Spica"
+            }
+        }
+  }
+
+preview (barlow (key :: _ "zodiac?.virgo!.alpha")) sky
 ```
 
 ## Credits
