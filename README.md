@@ -91,7 +91,7 @@ over (barlow (key :: _ "zodiac+.virgo?.star")) toUpper sky
 
 ```purescript
 newtype Alpha = Alpha { alpha :: String }
-instance alphaNT :: Newtype Alpha { alpha :: String
+instance alphaNT :: Newtype Alpha { alpha :: String }
 
 sky =
   { zodiac:
