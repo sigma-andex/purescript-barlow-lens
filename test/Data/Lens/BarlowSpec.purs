@@ -6,7 +6,7 @@ import Data.Lens.Barlow (barlow, key)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.String (toUpper)
-import Prelude (Unit, discard)
+import Prelude (Unit, discard, ($))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -333,4 +333,17 @@ spec =
             }
 
           actual = preview (barlow (key :: _ "zodiac?.virgo.alpha!")) sky
+        actual `shouldEqual` (Just "Spica")
+      it "should view into a data type" do
+        let
+          sky =
+            Just $ Right $ { zodiac:
+                Just
+                  { virgo:
+                      { alpha: Alpha "Spica"
+                      }
+                  }
+            }
+
+          actual = preview (barlow (key :: _ "?>.zodiac?.virgo.alpha!")) sky
         actual `shouldEqual` (Just "Spica")
