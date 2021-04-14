@@ -37,7 +37,6 @@ foreign import data ExclamationMark :: LensType
 
 foreign import data RecordField :: Symbol -> LensType
 
-foreign import data Terminator :: LensType
 
 class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attributes
 
@@ -110,11 +109,6 @@ else instance parseCons ::
   ) =>
   ParseSymbol string fl
 
-tshow :: forall sym tlist. ParseSymbol sym tlist => Proxy sym -> Proxy tlist
-tshow _ = Proxy
-
-x :: Proxy (TCons (RecordField "zodiac") (TCons QuestionMark (TCons (RecordField "virgo") (TCons QuestionMark (TCons (RecordField "alpha") (TCons QuestionMark TNil))))))
-x = tshow (Proxy :: Proxy "zodiac?.virgo?.alpha?")
 
 class ConstructBarlow (attributes :: TList) p input output | attributes -> input output where
   constructBarlow :: Proxy attributes -> Optic' p input output
