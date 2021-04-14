@@ -42,21 +42,21 @@ class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attribute
 
 class Parse1Symbol (head :: Symbol) (tail :: Symbol) (out :: TList) | head tail -> out
 
-class Parse2 (head :: Symbol) (tail :: Symbol) (out :: Symbol) (rest :: Symbol) | head tail -> out rest
+class ParseRecordField (head :: Symbol) (tail :: Symbol) (out :: Symbol) (rest :: Symbol) | head tail -> out rest
 
-instance parse21 :: Parse2 "." t "" t
-else instance parse22 :: (Symbol.Cons "?" t out) => Parse2 "?" t "" out
-else instance parse23 :: (Symbol.Cons "<" t out) => Parse2 "<" t "" out
-else instance parse24 :: (Symbol.Cons ">" t out) => Parse2 ">" t "" out
-else instance parse25 :: (Symbol.Cons "+" t out) => Parse2 "+" t "" out
-else instance parse26 :: (Symbol.Cons "!" t out) => Parse2 "!" t "" out
-else instance parse2a :: Parse2 h "" h ""
-else instance parse27 ::
+instance parserecordfieldDot :: ParseRecordField "." t "" t
+else instance parserecordfieldQuestionMark :: (Symbol.Cons "?" t out) => ParseRecordField "?" t "" out
+else instance parserecordfieldLeftArrow :: (Symbol.Cons "<" t out) => ParseRecordField "<" t "" out
+else instance parserecordfieldRightArrow :: (Symbol.Cons ">" t out) => ParseRecordField ">" t "" out
+else instance parserecordfieldPlus :: (Symbol.Cons "+" t out) => ParseRecordField "+" t "" out
+else instance parserecordfieldExclamationMark :: (Symbol.Cons "!" t out) => ParseRecordField "!" t "" out
+else instance parserecordfieldEnd :: ParseRecordField h "" h ""
+else instance parserecordfieldCons ::
   ( Symbol.Cons th tt t
-  , Parse2 th tt tout trest
+  , ParseRecordField th tt tout trest
   , Symbol.Cons h tout out 
   ) =>
-  Parse2 h t out trest 
+  ParseRecordField h t out trest 
 
 instance parse1Nil :: Parse1Symbol a "" (TCons (RecordField a) TNil)
 else instance parse1Dot ::
@@ -85,7 +85,7 @@ else instance parse1ExclamationMark ::
   Parse1Symbol "!" s (TCons ExclamationMark rest)
 else instance parse1Other ::
   ( Symbol.Cons th tt t
-  , Parse2 th tt tout trest
+  , ParseRecordField th tt tout trest
   , Symbol.Cons h tout out 
   , ParseSymbol trest rest
   ) =>
