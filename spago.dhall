@@ -8,6 +8,13 @@
   , "spec"
   , "spec-discovery"
   , "typelevel-prelude"
+  , "aff"
+  , "either"
+  , "maybe"
+  , "newtype"
+  , "prelude"
+  , "profunctor"
+  , "strings"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
