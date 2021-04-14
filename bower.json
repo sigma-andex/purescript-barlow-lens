@@ -14,13 +14,20 @@
         "output"
     ],
     "dependencies": {
+        "purescript-aff": "^v6.0.0",
         "purescript-console": "^v5.0.0",
         "purescript-effect": "^v3.0.0",
+        "purescript-either": "^v5.0.0",
         "purescript-foldable-traversable": "^v5.0.0",
+        "purescript-maybe": "^v5.0.0",
+        "purescript-newtype": "^v4.0.0",
+        "purescript-prelude": "^v5.0.0",
+        "purescript-profunctor": "^v5.0.0",
         "purescript-profunctor-lenses": "^v7.0.0",
         "purescript-psci-support": "^v5.0.0",
         "purescript-spec": "^v5.0.0",
         "purescript-spec-discovery": "^v6.0.0",
+        "purescript-strings": "^v5.0.0",
         "purescript-typelevel-prelude": "^v6.0.0"
     }
 }
