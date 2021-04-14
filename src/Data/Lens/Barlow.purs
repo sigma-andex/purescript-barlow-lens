@@ -1,7 +1,6 @@
 module Data.Lens.Barlow where
 
 import Prelude
-
 import Data.Either (Either)
 import Data.Lens (class Wander, Optic', _Just, _Left, _Right, traversed)
 import Data.Lens.Iso.Newtype (_Newtype)
@@ -38,72 +37,91 @@ foreign import data ExclamationMark :: LensType
 
 foreign import data RecordField :: Symbol -> LensType
 
+foreign import data Terminator :: LensType
+
 class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attributes
 
 class Parse1Symbol (head :: Symbol) (tail :: Symbol) (out :: TList) | head tail -> out
+
+class Parse2 (head :: Symbol) (tail :: Symbol) (out :: Symbol) (rest :: Symbol) | head tail -> out rest
+
+instance parse21 :: Parse2 "." t "" t
+else instance parse22 :: (Symbol.Cons "?" t out) => Parse2 "?" t "" out
+else instance parse23 :: (Symbol.Cons "<" t out) => Parse2 "<" t "" out
+else instance parse24 :: (Symbol.Cons ">" t out) => Parse2 ">" t "" out
+else instance parse25 :: (Symbol.Cons "+" t out) => Parse2 "+" t "" out
+else instance parse26 :: (Symbol.Cons "!" t out) => Parse2 "!" t "" out
+else instance parse2a :: Parse2 h "" h ""
+else instance parse27 ::
+  ( Symbol.Cons th tt t
+  , Parse2 th tt tout trest
+  , Symbol.Cons h tout out 
+  ) =>
+  Parse2 h t out trest 
 
 instance parse1Nil :: Parse1Symbol a "" (TCons (RecordField a) TNil)
 else instance parse1Dot ::
   ( ParseSymbol s rest
     ) =>
-  Parse1Symbol "." s (TCons (RecordField "") rest)
+  Parse1Symbol "." s rest
 else instance parse1QuestionMark ::
   ( ParseSymbol s rest
     ) =>
-  Parse1Symbol "?" s (TCons (RecordField "") (TCons QuestionMark rest))
+  Parse1Symbol "?" s (TCons QuestionMark rest)
 else instance parse1RightArrow ::
   ( ParseSymbol s rest
     ) =>
-  Parse1Symbol ">" s (TCons (RecordField "") (TCons RightArrow rest))
+  Parse1Symbol ">" s (TCons RightArrow rest)
 else instance parse1LeftArrow ::
   ( ParseSymbol s rest
     ) =>
-  Parse1Symbol "<" s (TCons (RecordField "") (TCons LeftArrow rest))
+  Parse1Symbol "<" s (TCons LeftArrow rest)
 else instance parse1Plus ::
   ( ParseSymbol s rest
     ) =>
-  Parse1Symbol "+" s (TCons (RecordField "") (TCons Plus rest))
+  Parse1Symbol "+" s (TCons Plus rest)
 else instance parse1ExclamationMark ::
   ( ParseSymbol s rest
     ) =>
-  Parse1Symbol "!" s (TCons (RecordField "") (TCons ExclamationMark rest))
+  Parse1Symbol "!" s (TCons ExclamationMark rest)
 else instance parse1Other ::
-  ( ParseSymbol s (TCons (RecordField acc) r)
-  , Symbol.Cons o acc rest
+  ( Symbol.Cons th tt t
+  , Parse2 th tt tout trest
+  , Symbol.Cons h tout out 
+  , ParseSymbol trest rest
   ) =>
-  Parse1Symbol o s (TCons (RecordField rest) r)
+  Parse1Symbol h t (TCons (RecordField out) rest)
 
 instance parseNilQuestionMark ::
-  ParseSymbol "?" (TCons (RecordField "") (TCons QuestionMark TNil))
+  ParseSymbol "?" (TCons QuestionMark TNil)
 else instance parseNilRightArrow ::
-  ParseSymbol ">" (TCons (RecordField "") (TCons RightArrow TNil))
+  ParseSymbol ">" (TCons RightArrow TNil)
 else instance parseNilLeftArrow ::
-  ParseSymbol "<" (TCons (RecordField "") (TCons LeftArrow TNil))
+  ParseSymbol "<" (TCons LeftArrow TNil)
 else instance parseNilPlus ::
-  ParseSymbol "+" (TCons (RecordField "") (TCons Plus TNil))
+  ParseSymbol "+" (TCons Plus TNil)
 else instance parseNilExclamationMark ::
-  ParseSymbol "!" (TCons (RecordField "") (TCons ExclamationMark TNil))
+  ParseSymbol "!" (TCons ExclamationMark TNil)
 else instance parseNil ::
-  ParseSymbol "" (TCons (RecordField "") TNil)
+  ParseSymbol "" TNil
 else instance parseCons ::
   ( Symbol.Cons h t string
   , Parse1Symbol h t fl
   ) =>
   ParseSymbol string fl
 
+tshow :: forall sym tlist. ParseSymbol sym tlist => Proxy sym -> Proxy tlist
+tshow _ = Proxy
+
+x :: Proxy (TCons (RecordField "zodiac") (TCons QuestionMark (TCons (RecordField "virgo") (TCons QuestionMark (TCons (RecordField "alpha") (TCons QuestionMark TNil))))))
+x = tshow (Proxy :: Proxy "zodiac?.virgo?.alpha?")
+
 class ConstructBarlow (attributes :: TList) p input output | attributes -> input output where
   constructBarlow :: Proxy attributes -> Optic' p input output
 
--- Nil instance for record selector
-instance constructBarlowNil ::
-  ( IsSymbol sym
-  , Row.Cons sym output rc x
-  , Strong p
-  ) =>
-  ConstructBarlow (TCons (RecordField sym) TNil) p (Record x) output where
-  constructBarlow proxy = prop (Proxy :: Proxy sym)
+
 -- Nil instance for question mark 
-else instance constructBarlowNilQuestionMark ::
+instance constructBarlowNilQuestionMark ::
   ( Choice p
     ) =>
   ConstructBarlow (TCons QuestionMark TNil) p (Maybe output) output where
@@ -131,9 +149,17 @@ else instance constructBarlowNilPlus ::
 else instance constructBarlowNilExclamationMark ::
   ( Choice p
   , Newtype nt output
-    ) =>
+  ) =>
   ConstructBarlow (TCons ExclamationMark TNil) p nt output where
   constructBarlow proxy = _Newtype
+-- Nil instance for record selector
+else instance constructBarlowNil ::
+  ( IsSymbol sym
+  , Row.Cons sym output rc x
+  , Strong p
+  ) =>
+  ConstructBarlow (TCons (RecordField sym) TNil) p (Record x) output where
+  constructBarlow proxy = prop (Proxy :: Proxy sym)
 -- Cons instance for question mark
 else instance constructBarlowConsQuestionMark ::
   ( ConstructBarlow rest p restR output
@@ -141,7 +167,7 @@ else instance constructBarlowConsQuestionMark ::
   , Choice p
   ) =>
   ConstructBarlow
-    (TCons QuestionMark (TCons (RecordField "") rest))
+    (TCons QuestionMark rest)
     p
     (Maybe restR)
     output where
@@ -153,7 +179,7 @@ else instance constructBarlowConsRightArrow ::
   , Choice p
   ) =>
   ConstructBarlow
-    (TCons RightArrow (TCons (RecordField "") rest))
+    (TCons RightArrow rest)
     p
     (Either l restR)
     output where
@@ -165,7 +191,7 @@ else instance constructBarlowConsLeftArrow ::
   , Choice p
   ) =>
   ConstructBarlow
-    (TCons LeftArrow (TCons (RecordField "") rest))
+    (TCons LeftArrow rest)
     p
     (Either restR r)
     output where
@@ -178,7 +204,7 @@ else instance constructBarlowConsPlus ::
   , Traversable t
   ) =>
   ConstructBarlow
-    (TCons Plus (TCons (RecordField "") rest))
+    (TCons Plus rest)
     p
     (t restR)
     output where
@@ -191,7 +217,7 @@ else instance constructBarlowConsExclamationMark ::
   , Choice p
   ) =>
   ConstructBarlow
-    (TCons ExclamationMark (TCons (RecordField "") rest))
+    (TCons ExclamationMark rest)
     p
     nt
     output where
@@ -220,9 +246,9 @@ class Barlow (string :: Symbol) p input output | string -> input output where
 
 instance barlowInstance ::
   ( ParseSymbol string attributes
-  , ConstructBarlow attributes p { | input } output
+  , ConstructBarlow attributes p input output
   ) =>
-  Barlow string p { | input } output where
+  Barlow string p input output where
   barlow _ = constructBarlow (Proxy :: Proxy attributes)
 
 -- | Just an alias for `Proxy` to make selection a bit nicer
