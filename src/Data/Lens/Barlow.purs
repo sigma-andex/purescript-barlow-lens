@@ -1,8 +1,11 @@
 module Data.Lens.Barlow where
 
 import Prelude
+
 import Data.Either (Either)
+import Data.Generic.Rep (class Generic, Argument, Constructor, NoArguments, Product, Sum)
 import Data.Lens (class Wander, Optic', _Just, _Left, _Right, traversed)
+import Data.Lens.Barlow.Generic (_Argument, _Constructor, _NoArguments, _ProductLeft, _ProductRight, _SumLeft, _SumRight, _ToGeneric)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe)
@@ -110,7 +113,113 @@ else instance parseCons ::
   ParseSymbol string fl
 
 
-class ConstructBarlow (attributes :: TList) p input output | attributes -> input output where
+class ConstructBarlowGeneric (attributes :: TList) p input output | attributes input -> output where
+  constructBarlowGeneric :: Proxy attributes -> Optic' p input output
+
+-- Nil instance for left arrow generic with no argument
+instance constructBarlowGenericNilLeftArrowNoArguments ::
+  ( Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow TNil)
+    p
+    NoArguments
+    Unit where
+  constructBarlowGeneric _ = _NoArguments
+
+-- Nil instance for left arrow generic with no argument
+else instance constructBarlowGenericNilLeftArrowConstructorNoArguments ::
+  ( Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow TNil)
+    p
+    (Constructor sym NoArguments) 
+    Unit where
+  constructBarlowGeneric _ = _Constructor <<< _NoArguments
+
+-- -- Cons instance for left arrow generic with one argument
+else instance constructBarlowGenericLeftArrowArgument ::
+  ( ConstructBarlow rest p restR output
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow rest)
+    p
+    (Argument restR)
+    output where
+  constructBarlowGeneric _ = _Argument <<< constructBarlow (Proxy :: Proxy rest)
+
+-- -- Cons instance for left arrow generic with one argument
+else instance constructBarlowGenericLeftArrowConstructorArgument ::
+  ( ConstructBarlow rest p restR output
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow rest)
+    p
+    (Constructor sym (Argument restR))
+    output where
+  constructBarlowGeneric _ = _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
+
+-- -- Cons instance for left arrow generic with product
+else instance constructBarlowGenericLeftArrowConstructorProduct ::
+  ( ConstructBarlow rest p restR output
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow rest)
+    p
+    (Constructor sym (Product (Argument restR) r))
+    output where
+  constructBarlowGeneric _ = _Constructor <<< _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
+
+-- -- Cons instance for left arrow generic with product
+else instance constructBarlowGenericRightArrowConstructorProduct ::
+  ( ConstructBarlowGeneric rest p restR output
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons RightArrow rest)
+    p
+    (Product l restR)
+    output where
+  constructBarlowGeneric _ = _ProductRight <<< constructBarlowGeneric (Proxy :: Proxy rest)
+
+-- Cons instance for left arrow generic with one argument
+else instance constructBarlowConsLeftArrowSum ::
+  ( ConstructBarlowGeneric rest p restR output
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow rest)
+    p
+    (Sum (Constructor sym restR) r)
+    output where
+  constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
+
+-- Cons instance for left arrow generic with one argument
+else instance constructBarlowConsRightArrowSum ::
+  ( ConstructBarlowGeneric rest p restR output
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons RightArrow rest)
+    p
+    (Sum l (Constructor sym restR))
+    output where
+  constructBarlowGeneric _ = _SumRight <<< _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
+
+
+class ConstructBarlow (attributes :: TList) p input output | attributes input -> output where
   constructBarlow :: Proxy attributes -> Optic' p input output
 
 
@@ -119,33 +228,33 @@ instance constructBarlowNilQuestionMark ::
   ( Choice p
     ) =>
   ConstructBarlow (TCons QuestionMark TNil) p (Maybe output) output where
-  constructBarlow proxy = _Just
+  constructBarlow _ = _Just
 -- Nil instance for right arrow
 else instance constructBarlowNilRightArrow ::
   ( Choice p
     ) =>
   ConstructBarlow (TCons RightArrow TNil) p (Either l output) output where
-  constructBarlow proxy = _Right
+  constructBarlow _ = _Right
 -- Nil instance for left arrow
 else instance constructBarlowNilLeftArrow ::
   ( Choice p
     ) =>
   ConstructBarlow (TCons LeftArrow TNil) p (Either output r) output where
-  constructBarlow proxy = _Left
+  constructBarlow _ = _Left
 -- Nil instance for plus
 else instance constructBarlowNilPlus ::
   ( Wander p
   , Traversable t
   ) =>
   ConstructBarlow (TCons Plus TNil) p (t output) output where
-  constructBarlow proxy = traversed
+  constructBarlow _ = traversed
 -- Nil instance for exclamation mark  
 else instance constructBarlowNilExclamationMark ::
   ( Choice p
   , Newtype nt output
   ) =>
   ConstructBarlow (TCons ExclamationMark TNil) p nt output where
-  constructBarlow proxy = _Newtype
+  constructBarlow _ = _Newtype
 -- Nil instance for record selector
 else instance constructBarlowNil ::
   ( IsSymbol sym
@@ -153,7 +262,9 @@ else instance constructBarlowNil ::
   , Strong p
   ) =>
   ConstructBarlow (TCons (RecordField sym) TNil) p (Record x) output where
-  constructBarlow proxy = prop (Proxy :: Proxy sym)
+  constructBarlow _ = prop (Proxy :: Proxy sym)
+
+
 -- Cons instance for question mark
 else instance constructBarlowConsQuestionMark ::
   ( ConstructBarlow rest p restR output
@@ -165,7 +276,7 @@ else instance constructBarlowConsQuestionMark ::
     p
     (Maybe restR)
     output where
-  constructBarlow proxy = _Just <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlow _ = _Just <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for right arrow
 else instance constructBarlowConsRightArrow ::
   ( ConstructBarlow rest p restR output
@@ -177,7 +288,7 @@ else instance constructBarlowConsRightArrow ::
     p
     (Either l restR)
     output where
-  constructBarlow proxy = _Right <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlow _ = _Right <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for left arrow
 else instance constructBarlowConsLeftArrow ::
   ( ConstructBarlow rest p restR output
@@ -189,7 +300,7 @@ else instance constructBarlowConsLeftArrow ::
     p
     (Either restR r)
     output where
-  constructBarlow proxy = _Left <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlow _ = _Left <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for plus
 else instance constructBarlowConsPlus ::
   ( ConstructBarlow rest p restR output
@@ -202,7 +313,7 @@ else instance constructBarlowConsPlus ::
     p
     (t restR)
     output where
-  constructBarlow proxy = traversed <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlow _ = traversed <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for Newtype
 else instance constructBarlowConsExclamationMark ::
   ( ConstructBarlow rest p restR output
@@ -215,7 +326,7 @@ else instance constructBarlowConsExclamationMark ::
     p
     nt
     output where
-  constructBarlow proxy = _Newtype <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlow _ = _Newtype <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for record selector
 else instance constructBarlowCons ::
   ( IsSymbol sym
@@ -224,7 +335,24 @@ else instance constructBarlowCons ::
   , Strong p
   ) =>
   ConstructBarlow (TCons (RecordField sym) rest) p { | rl } output where
-  constructBarlow proxy = prop (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlow _ = prop (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
+
+
+-- Cons instance for generic
+else instance constructBarlowNilGeneric ::
+  ( Generic input rep 
+  , ConstructBarlowGeneric tlist p rep output
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlow
+    tlist
+    p
+    input
+    output where
+  constructBarlow _ = _ToGeneric <<< constructBarlowGeneric (Proxy :: Proxy tlist)
+
+
 
 class Barlow (string :: Symbol) p input output | string -> input output where
   -- | Type-safe lens for zooming into a deeply nested record

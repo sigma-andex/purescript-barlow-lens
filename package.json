@@ -10,8 +10,8 @@
   "author": "",
   "license": "MIT-0",
   "devDependencies": {
-    "purescript": "^0.14.0",
+    "purescript": "^0.14.1",
     "purty": "^7.0.0",
-    "spago": "^0.19.1"
+    "spago": "^0.20.0"
   }
 }
