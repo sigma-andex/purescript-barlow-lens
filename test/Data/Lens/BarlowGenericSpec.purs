@@ -107,7 +107,7 @@ spec =
 
           actual = view (barlow (key :: _ "zodiac.virgo><.beta")) sky
         actual `shouldEqual` "β Car"
-      it "should view into a sum type right case" do
+      it "should view into a sum with product type right case" do
         let
           sky =
             { zodiac:
@@ -116,5 +116,5 @@ spec =
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo>>>><.delta")) sky
+          actual = view (barlow (key :: _ "zodiac.virgo>.>>><.delta")) sky
         actual `shouldEqual` "δ Vir"
