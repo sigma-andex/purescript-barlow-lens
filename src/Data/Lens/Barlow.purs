@@ -116,20 +116,28 @@ else instance parseCons ::
 class ConstructBarlowGeneric (attributes :: TList) p input output | attributes input -> output where
   constructBarlowGeneric :: Proxy attributes -> Optic' p input output
 
--- Nil instance for left arrow generic with no argument
-instance constructBarlowGenericNilLeftArrowNoArguments ::
-  ( Strong p
-  , Choice p
-  ) =>
-  ConstructBarlowGeneric
-    (TCons LeftArrow TNil)
-    p
-    NoArguments
-    Unit where
-  constructBarlowGeneric _ = _NoArguments
+{-
+(Constructor @"A1" NoArguments)
+(Constructor @"A2" (Argument "hallo"))
+(Constructor @"A3" (Argument Red))
+(Constructor @"A4" (Product (Argument "hello") (Argument 9)))
+(Constructor @"A9" (Product (Argument "buenas") (Product (Argument 14) (Argument true))))
+(Inl (Constructor @"A5" NoArguments))
+(Inl (Constructor @"A6" (Argument "Wurst")))
+(Inl (Constructor @"A8" (Product (Argument "hola") (Argument 11))))
+(Inl (Constructor @"A10" (Argument 15)))
+(Inl (Constructor @"A7" NoArguments))
+(Inr (Constructor @"B5" NoArguments))
+(Inr (Constructor @"B6" (Argument 10)))
+(Inr (Constructor @"B7" (Argument Yellow)))
+(Inr (Inl (Constructor @"B8" (Argument 12))))
+(Inr (Inr (Constructor @"C8" NoArguments)))
+(Inr (Inl (Constructor @"B10" (Product (Argument Yellow) (Product (Argument "adios") (Argument 16))))))
+(Inr (Inr (Constructor @"C10" (Product (Argument "uno") (Product (Argument "dos") (Argument "tres"))))))
+-}
 
--- Nil instance for left arrow generic with no argument
-else instance constructBarlowGenericNilLeftArrowConstructorNoArguments ::
+
+instance cbgNilLeftArrowConstructorNoArguments ::
   ( Strong p
   , Choice p
   ) =>
@@ -141,23 +149,20 @@ else instance constructBarlowGenericNilLeftArrowConstructorNoArguments ::
   constructBarlowGeneric _ = _Constructor <<< _NoArguments
 
 -- -- Cons instance for left arrow generic with one argument
-else instance constructBarlowGenericLeftArrowArgument ::
-  ( ConstructBarlow rest p restR output
-  , Strong p
+else instance cbgNilLeftArrowConstructorArgument ::
+  ( Strong p
   , Choice p
   ) =>
   ConstructBarlowGeneric
-    (TCons LeftArrow rest)
+    (TCons LeftArrow TNil)
     p
-    (Argument restR)
+    (Constructor sym (Argument output))
     output where
-  constructBarlowGeneric _ = _Argument <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlowGeneric _ = _Constructor <<< _Argument 
 
--- -- Cons instance for left arrow generic with one argument
-else instance constructBarlowGenericLeftArrowConstructorArgument ::
+else instance cbgConsLeftArrowConstructorArgument ::
   ( ConstructBarlow rest p restR output
   , Strong p
-  , Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons LeftArrow rest)
@@ -166,24 +171,130 @@ else instance constructBarlowGenericLeftArrowConstructorArgument ::
     output where
   constructBarlowGeneric _ = _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 
--- -- Cons instance for left arrow generic with product
-else instance constructBarlowGenericLeftArrowConstructorProduct ::
+
+else instance cbgNilLeftArrowConstructorProductArgument ::
+  ( Strong p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow TNil)
+    p
+    (Constructor sym (Product (Argument output) r))
+    output where
+  constructBarlowGeneric _ = _Constructor <<< _ProductLeft <<< _Argument
+
+else instance cbgConsLeftArrowConstructorProductArgument ::
   ( ConstructBarlow rest p restR output
   , Strong p
-  , Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons LeftArrow rest)
     p
     (Constructor sym (Product (Argument restR) r))
     output where
-  constructBarlowGeneric _ = _Constructor <<< _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlowGeneric _ = _Constructor <<< _ProductLeft <<< _Argument <<<  constructBarlow (Proxy :: Proxy rest)
 
--- -- Cons instance for left arrow generic with product
-else instance constructBarlowGenericRightArrowConstructorProduct ::
+else instance cbgNilRightArrowConstructorProductArgument ::
+  ( Strong p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons RightArrow TNil)
+    p
+    (Constructor sym (Product l (Argument output)))
+    output where
+  constructBarlowGeneric _ = _Constructor <<< _ProductRight <<< _Argument
+  
+else instance cbgConsRightArrowConstructorProductArgument ::
+  ( ConstructBarlow rest p restR output
+  , Strong p
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons RightArrow rest)
+    p
+    (Constructor sym (Product l (Argument restR)))
+    output where
+  constructBarlowGeneric _ = _Constructor <<< _ProductRight <<< _Argument <<<  constructBarlow (Proxy :: Proxy rest)
+
+else instance cbgRightArrowConstructorProductRecursive ::
   ( ConstructBarlowGeneric rest p restR output
   , Strong p
   , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons RightArrow rest)
+    p
+    (Constructor sym (Product l restR))
+    output where
+  constructBarlowGeneric _ = _Constructor <<< _ProductRight <<< constructBarlowGeneric (Proxy :: Proxy rest)
+
+
+else instance cbgConsLeftArrowSum ::
+  ( ConstructBarlowGeneric rest p restR output
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow rest)
+    p
+    (Sum restR r)
+    output where
+  constructBarlowGeneric _ = _SumLeft <<< constructBarlowGeneric (Proxy :: Proxy rest)
+
+else instance cbgConsRightArrowSum ::
+  ( ConstructBarlowGeneric rest p restR output
+  , Choice p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons RightArrow rest)
+    p
+    (Sum l restR)
+    output where
+  constructBarlowGeneric _ = _SumRight <<< constructBarlowGeneric (Proxy :: Proxy rest)
+
+else instance cbgNilLeftArrowProduct ::
+  ( Strong p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow TNil)
+    p
+    (Product (Argument output) r)
+    output where
+  constructBarlowGeneric _ = _ProductLeft <<< _Argument
+
+else instance cbgConsLeftArrowProduct ::
+  ( ConstructBarlow rest p restR output
+  , Strong p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons LeftArrow rest)
+    p
+    (Product (Argument restR) r)
+    output where
+  constructBarlowGeneric _ = _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
+
+else instance cbgNilRightArrowProductArgument ::
+  ( Strong p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons RightArrow TNil)
+    p
+    (Product l (Argument output))
+    output where
+  constructBarlowGeneric _ = _ProductRight <<< _Argument
+  
+else instance cbgConsRightArrowProductArgument ::
+  ( ConstructBarlow rest p restR output
+  , Strong p
+  ) =>
+  ConstructBarlowGeneric
+    (TCons RightArrow rest)
+    p
+    (Product l (Argument restR))
+    output where
+  constructBarlowGeneric _ = _ProductRight <<< _Argument <<<  constructBarlow (Proxy :: Proxy rest)
+
+else instance cbgRightArrowProductRecursive ::
+  ( ConstructBarlowGeneric rest p restR output
+  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons RightArrow rest)
@@ -192,31 +303,6 @@ else instance constructBarlowGenericRightArrowConstructorProduct ::
     output where
   constructBarlowGeneric _ = _ProductRight <<< constructBarlowGeneric (Proxy :: Proxy rest)
 
--- Cons instance for left arrow generic with one argument
-else instance constructBarlowConsLeftArrowSum ::
-  ( ConstructBarlowGeneric rest p restR output
-  , Strong p
-  , Choice p
-  ) =>
-  ConstructBarlowGeneric
-    (TCons LeftArrow rest)
-    p
-    (Sum (Constructor sym restR) r)
-    output where
-  constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
-
--- Cons instance for left arrow generic with one argument
-else instance constructBarlowConsRightArrowSum ::
-  ( ConstructBarlowGeneric rest p restR output
-  , Strong p
-  , Choice p
-  ) =>
-  ConstructBarlowGeneric
-    (TCons RightArrow rest)
-    p
-    (Sum l (Constructor sym restR))
-    output where
-  constructBarlowGeneric _ = _SumRight <<< _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
 
 
 class ConstructBarlow (attributes :: TList) p input output | attributes input -> output where
