@@ -50,6 +50,13 @@ derive instance genericZodiac5 :: Generic Zodiac5 _
 instance showZodiac5 :: Show Zodiac5 where
   show = genericShow
 
+data Zodiac6
+  = Carina6 | Virgo6 | CanisMaior6 | Cassiopeia6 | Centaurus6 String 
+
+derive instance genericZodiac6 :: Generic Zodiac6 _
+
+instance showZodiac6 :: Show Zodiac6 where
+  show = genericShow
 
 spec :: Spec Unit
 spec =
@@ -112,9 +119,19 @@ spec =
           sky =
             { zodiac:
                 { virgo:
+                  -- Carina5 | Virgo5 { alpha :: String } { beta :: String } { gamma:: String } { delta :: String }
                     Virgo5 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo>.>>><.delta")) sky
+          actual = view (barlow (key :: _ "zodiac.virgo>.>>>.delta")) sky
         actual `shouldEqual` "δ Vir"
+
+      it "should view into a sum with product type right case" do
+        let
+          sky =
+            { zodiac: Centaurus6 "Rigil Kentaurus"
+            }
+
+          actual = view (barlow (key :: _ "zodiac>>>><")) sky
+        actual `shouldEqual` "Rigil Kentaurus"
