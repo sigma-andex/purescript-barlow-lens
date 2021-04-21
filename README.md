@@ -147,7 +147,7 @@ Use `<` and `>` to zoom into the left and right cases of your product type.
 
 ```purescript
 data Zodiac
-  = Virgo { alpha :: String } { beta :: String } { gamma:: String } { delta :: String }
+  = Virgo { alpha :: String } { beta :: String } { gamma :: String } { delta :: String }
 
 derive instance genericZodiac :: Generic Zodiac _
 
@@ -165,11 +165,11 @@ actual = preview (barlow (key :: _ "zodiac.virgo>>>.delta")) sky
 -- (Just "δ Vir")
 ```
 
-And you can of course combine them. It is more readibly if you separate your sum lens from your product lens with a `.` dot. 
+And you can of course combine them. It is more readable if you separate your sum lens from your product lens with a `.` dot. 
 
 ```purescript 
 data Zodiac
-  = Carina { alpha :: String } | Virgo { alpha :: String } { beta :: String } { gamma:: String } { delta :: String } | CanisMaior String 
+  = Carina { alpha :: String } | Virgo { alpha :: String } { beta :: String } { gamma :: String } { delta :: String } | CanisMaior String 
 
 derive instance genericZodiac :: Generic Zodiac _
 derive instance eqZodiac :: Eq Zodiac
