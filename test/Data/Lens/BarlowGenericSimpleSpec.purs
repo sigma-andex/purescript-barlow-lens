@@ -2,7 +2,7 @@ module Data.Lens.BarloGenericSimpleSpec where
 
 import Data.Eq (class Eq)
 import Data.Generic.Rep (class Generic)
-import Data.Lens (preview, view)
+import Data.Lens (preview)
 import Data.Lens.Barlow (barlow, key)
 import Data.Maybe (Maybe(..))
 import Data.Show (class Show)

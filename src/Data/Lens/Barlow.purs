@@ -172,61 +172,16 @@ else instance cbgConsLeftArrowConstructorArgument ::
   constructBarlowGeneric _ = _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 
 
-else instance cbgNilLeftArrowConstructorProductArgument ::
-  ( Strong p
-  ) =>
-  ConstructBarlowGeneric
-    (TCons LeftArrow TNil)
-    p
-    (Constructor sym (Product (Argument output) r))
-    output where
-  constructBarlowGeneric _ = _Constructor <<< _ProductLeft <<< _Argument
-
-else instance cbgConsLeftArrowConstructorProductArgument ::
-  ( ConstructBarlow rest p restR output
-  , Strong p
-  ) =>
-  ConstructBarlowGeneric
-    (TCons LeftArrow rest)
-    p
-    (Constructor sym (Product (Argument restR) r))
-    output where
-  constructBarlowGeneric _ = _Constructor <<< _ProductLeft <<< _Argument <<<  constructBarlow (Proxy :: Proxy rest)
-
-else instance cbgNilRightArrowConstructorProductArgument ::
-  ( Strong p
-  ) =>
-  ConstructBarlowGeneric
-    (TCons RightArrow TNil)
-    p
-    (Constructor sym (Product l (Argument output)))
-    output where
-  constructBarlowGeneric _ = _Constructor <<< _ProductRight <<< _Argument
-  
-else instance cbgConsRightArrowConstructorProductArgument ::
-  ( ConstructBarlow rest p restR output
-  , Strong p
-  , Choice p
-  ) =>
-  ConstructBarlowGeneric
-    (TCons RightArrow rest)
-    p
-    (Constructor sym (Product l (Argument restR)))
-    output where
-  constructBarlowGeneric _ = _Constructor <<< _ProductRight <<< _Argument <<<  constructBarlow (Proxy :: Proxy rest)
-
-else instance cbgRightArrowConstructorProductRecursive ::
+else instance cbgConstructorProduct ::
   ( ConstructBarlowGeneric rest p restR output
   , Strong p
-  , Choice p
   ) =>
   ConstructBarlowGeneric
-    (TCons RightArrow rest)
+    rest
     p
-    (Constructor sym (Product l restR))
+    (Constructor sym restR)
     output where
-  constructBarlowGeneric _ = _Constructor <<< _ProductRight <<< constructBarlowGeneric (Proxy :: Proxy rest)
-
+  constructBarlowGeneric _ = _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
 
 else instance cbgConsLeftArrowSum ::
   ( ConstructBarlowGeneric rest p restR output
