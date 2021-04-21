@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.0
+- Add expiremental support for algebraic data types 
+- Refactoring: Break up code into different modules
+
 ## v0.5.0
 - Simplified parsing 
 - Removed requirement for records. A lens can now start e.g. with `?` 
