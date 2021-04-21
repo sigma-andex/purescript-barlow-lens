@@ -2,9 +2,7 @@
 
 Barlow lens increases your magnification and let's you see the stars ✨
 
-*Ehh, wat ?*
-
-Barlow lens is a lens for records that makes it easy to zoom deep into the record.
+*In other words,* barlow lens makes creating complex lenses such as record lenses super simple.
 
 ## Installation
 
@@ -12,7 +10,7 @@ Barlow lens is a lens for records that makes it easy to zoom deep into the recor
 spago install barlow-lens
 ```
 
-## Usage 
+## tl;dr 
 
 ```purescript
 sky =
@@ -32,9 +30,18 @@ over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
 -- doesn't compile
 ```
 
+### Features 
+Barlow supports lens creation for the following types:
+- 📦🐈 [`Maybe`](#Maybe)
+- 🤷🏽‍♀️ [`Either`](#Either)
+- 📜 [`Array`](#Array-and-other-Traversables)
+- 🎁 [`Newtype`](#Newtype)
+- 🤖 [`Data types`](#Data-types-experimental) (experimental)
+
 ### Deep sky 🌌
 
-Now you can also zoom into `Maybe`s using `?`...
+#### Maybe 
+Use `?` to zoom into a `Maybe`.
 
 ```purescript 
 sky =
@@ -49,7 +56,9 @@ sky =
 
 preview (barlow (key :: _ "zodiac?.virgo?.alpha?")) sky
 ```
-... and `Either`s using `<` for `Left` and `>` for `Right`...
+
+#### Either
+Use `<` for `Left` and `>` for `Right` to zoom into an `Either`.
 
 ```purescript 
 sky =
@@ -65,7 +74,9 @@ sky =
 preview (barlow (key :: _ "zodiac>.virgo?.alpha<")) sky
 ```
 
-... and `Array`s (and other `Traversable`s) using `+` ...
+
+#### Array and other Traversables
+Use `+` to zoom into `Traversable`s like `Array`.
 
 ```purescript 
 
@@ -87,7 +98,8 @@ sky =
 over (barlow (key :: _ "zodiac+.virgo?.star")) toUpper sky
 ```
 
-... and `Newtype`s using `!`
+#### Newtype
+Use `!` to zoom into a `Newtype`.
 
 ```purescript
 newtype Alpha = Alpha { alpha :: String }
@@ -105,6 +117,77 @@ sky =
 preview (barlow (key :: _ "zodiac?.virgo!.alpha")) sky
 ```
 
+#### Data types (experimental)
+
+**Note: This feature is still experimental and might slightly change in the future 🛸.**
+
+Barlow now supports zooming into arbitrary sum and product data types as long as there is a `Generic` instance. 
+
+Use `<` and `>` to zoom into the left and right cases of your sum type. 
+
+```purescript
+data Zodiac
+  = Carina String | Virgo String | CanisMaior String 
+
+derive instance genericZodiac :: Generic Zodiac _
+
+instance showZodiac :: Show Zodiac where
+  show = genericShow
+
+sky =
+  { zodiac: CanisMaior "Sirius"
+  }
+
+-- Twice to the right for CanisMaior, once to the left for the String 
+actual = preview (barlow (key :: _ "zodiac>><")) sky
+-- Just "Sirius"
+```
+
+Use `<` and `>` to zoom into the left and right cases of your product type. 
+
+```purescript
+data Zodiac
+  = Virgo { alpha :: String } { beta :: String } { gamma:: String } { delta :: String }
+
+derive instance genericZodiac :: Generic Zodiac _
+
+instance showZodiac :: Show Zodiac where
+  show = genericShow
+
+sky =
+  { zodiac:
+      { virgo:
+          Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
+      }
+  }
+
+actual = preview (barlow (key :: _ "zodiac.virgo>>>.delta")) sky
+-- (Just "δ Vir")
+```
+
+And you can of course combine them. It is more readibly if you separate your sum lens from your product lens with a `.` dot. 
+
+```purescript 
+data Zodiac
+  = Carina { alpha :: String } | Virgo { alpha :: String } { beta :: String } { gamma:: String } { delta :: String } | CanisMaior String 
+
+derive instance genericZodiac :: Generic Zodiac _
+derive instance eqZodiac :: Eq Zodiac
+
+instance showZodiac :: Show Zodiac where
+  show = genericShow
+
+sky =
+  { zodiac:
+      { virgo:
+          Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
+      }
+  }
+
+over (barlow (key :: _ "zodiac.virgo><.>>>.delta")) toUpper sky
+-- { zodiac: { virgo: Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} } }
+```
+
 ## Credits
 
-This lib was heavily inspired by this incredible [blog post](https://blog.csongor.co.uk/purescript-safe-printf/#The%20problem).
+This lib was heavily inspired by this incredible [blog post](https://blog.csongor.co.uk/purescript-safe-printf/#The%20problem). Thanks also to @i-am-the-slime for pushing further and reviewing my PRs. 
