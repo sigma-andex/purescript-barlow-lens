@@ -18,10 +18,12 @@ import Type.Proxy (Proxy(..))
 import Data.Lens.Barlow.Parser
 import Data.Lens.Barlow.Types (ExclamationMark, LeftArrow, Plus, QuestionMark, RecordField, RightArrow, TCons, TList, TNil)
 
+
 class ConstructBarlowGeneric (attributes :: TList) p input output | attributes input -> output where
   constructBarlowGeneric :: Proxy attributes -> Optic' p input output
 
 {-
+These are examples of generic representations. Keeping them here fore reference.
 (Constructor @"A1" NoArguments)
 (Constructor @"A2" (Argument "hallo"))
 (Constructor @"A3" (Argument Red))
@@ -42,7 +44,6 @@ class ConstructBarlowGeneric (attributes :: TList) p input output | attributes i
 -}
 instance cbgNilLeftArrowConstructorNoArguments ::
   ( Strong p
-  , Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons LeftArrow TNil)
@@ -53,7 +54,6 @@ instance cbgNilLeftArrowConstructorNoArguments ::
 -- -- Cons instance for left arrow generic with one argument
 else instance cbgNilLeftArrowConstructorArgument ::
   ( Strong p
-  , Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons LeftArrow TNil)
@@ -264,8 +264,8 @@ else instance constructBarlowCons ::
   ) =>
   ConstructBarlow (TCons (RecordField sym) rest) p { | rl } output where
   constructBarlow _ = prop (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
--- Cons instance for generic
-else instance constructBarlowNilGeneric ::
+-- Instance for generic
+else instance constructBarlowConsNilGeneric ::
   ( Generic input rep
   , ConstructBarlowGeneric tlist p rep output
   , Strong p

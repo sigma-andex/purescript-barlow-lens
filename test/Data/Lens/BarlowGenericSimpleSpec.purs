@@ -2,13 +2,14 @@ module Data.Lens.BarloGenericSimpleSpec where
 
 import Data.Eq (class Eq)
 import Data.Generic.Rep (class Generic)
-import Data.Lens (preview)
+import Data.Lens (over, preview, set)
 import Data.Lens.Barlow (barlow, key)
 import Data.Maybe (Maybe(..))
 import Data.Show (class Show)
 import Data.Show.Generic (genericShow)
+import Data.String (toLower, toUpper)
 import Data.Unit (unit)
-import Prelude (Unit, discard)
+import Prelude (Unit, discard, (+))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -41,6 +42,18 @@ derive instance generic7 :: Generic ADT7 _
 derive instance generic8 :: Generic ADT8 _
 derive instance generic10 :: Generic ADT10 _
 derive instance generic11 :: Generic ADT11 _
+
+derive instance eqGeneric1 :: Eq ADT1
+derive instance eqGeneric2 :: Eq ADT2
+derive instance eqGeneric3 :: Eq ADT3
+derive instance eqGeneric4 :: Eq ADT4
+derive instance eqGeneric9 :: Eq ADT9
+derive instance eqGeneric5 :: Eq ADT5
+derive instance eqGeneric6 :: Eq ADT6
+derive instance eqGeneric7 :: Eq ADT7
+derive instance eqGeneric8 :: Eq ADT8
+derive instance eqGeneric10 :: Eq ADT10
+derive instance eqGeneric11 :: Eq ADT11
 
 instance show1 :: Show ADT1 where 
   show = genericShow 
@@ -93,7 +106,9 @@ spec =
             }
 
           actual = preview (barlow (key :: _ "zodiac<")) sky
+          actual2 = over (barlow (key :: _ "zodiac<")) toUpper sky
         actual `shouldEqual` (Just "World")
+        actual2 `shouldEqual` { zodiac: A2 "WORLD"}
       it "should view into a single constructor with one adt argument" do
         let
           sky =
@@ -101,7 +116,9 @@ spec =
             }
 
           actual = preview (barlow (key :: _ "zodiac<")) sky
+          actual2 = set (barlow (key :: _ "zodiac<")) Yellow sky 
         actual `shouldEqual` (Just Red) 
+        actual2 `shouldEqual` { zodiac: A3 Yellow }
       it "should view into a single constructor with one non-adt argument" do
         let
           sky =
@@ -109,7 +126,9 @@ spec =
             }
 
           actual = preview (barlow (key :: _ "zodiac<.name")) sky
+          actual2 = over (barlow (key :: _ "zodiac<.name")) toLower sky
         actual `shouldEqual` (Just "John Doe")
+        actual2 `shouldEqual` { zodiac: A11 { name : "john doe"}}
       it "should view into a single constructor with a tuple product argument (left && right)" do
         let
           sky =
@@ -118,8 +137,12 @@ spec =
 
           actualLeft = preview (barlow (key :: _ "zodiac<")) sky
           actualRight = preview (barlow (key :: _ "zodiac>")) sky
+          actualLeft2 = over (barlow (key :: _ "zodiac<")) toUpper sky
+          actualRight2 = over (barlow (key :: _ "zodiac>")) (_ + 1) sky
         actualLeft `shouldEqual` (Just "Caramba")
         actualRight `shouldEqual` (Just 10)
+        actualLeft2 `shouldEqual` { zodiac: A4 "CARAMBA" 10}
+        actualRight2 `shouldEqual` { zodiac: A4 "Caramba" 11}
 
       it "should view into a sum type with no argument constructors (left)" do
         let
@@ -146,7 +169,9 @@ spec =
             }
 
           actual = preview (barlow (key :: _ "zodiac<<")) sky
+          actual2 = over (barlow (key :: _ "zodiac<<")) toUpper sky
         actual `shouldEqual` (Just "Football")
+        actual2 `shouldEqual` { zodiac : A6 "FOOTBALL"}
 
       it "should view into a sum type with one argument constructors (right)" do
         let
@@ -177,7 +202,7 @@ spec =
           actualA10 = preview (barlow (key :: _ "zodiac<<")) sky
         actualA10 `shouldEqual` (Just 14)
 
-      it "should view into a multi sum type with multi argument constructors (left)" do
+      it "should view into a multi sum type with multi argument constructors (right)" do
         let
           sky =
             { zodiac: B10 Yellow "hello" 15
@@ -193,3 +218,22 @@ spec =
         actual3 `shouldEqual` Nothing
         actual4 `shouldEqual` Just "hello"
         actual5 `shouldEqual` Just 15
+
+      it "should view into a multi sum type with multi argument constructors (2x right)" do
+        let
+          sky =
+            { zodiac: C10 "first" "second" "third"
+            }
+
+          actual1 = preview (barlow (key :: _ "zodiac>>.<")) sky
+          actual2 = preview (barlow (key :: _ "zodiac>>.><")) sky
+          actual3 = preview (barlow (key :: _ "zodiac>>.>>")) sky
+          actual4 = over (barlow (key :: _ "zodiac>>.<")) toUpper sky
+          actual5 = over (barlow (key :: _ "zodiac>>.><")) toUpper sky
+          actual6 = over (barlow (key :: _ "zodiac>>.>>")) toUpper sky
+        actual1 `shouldEqual` (Just "first")
+        actual2 `shouldEqual` (Just "second")
+        actual3 `shouldEqual` (Just "third")
+        actual4 `shouldEqual` { zodiac: C10 "FIRST" "second" "third" } 
+        actual5 `shouldEqual` { zodiac: C10 "first" "SECOND" "third" } 
+        actual6 `shouldEqual` { zodiac: C10 "first" "second" "THIRD" } 
