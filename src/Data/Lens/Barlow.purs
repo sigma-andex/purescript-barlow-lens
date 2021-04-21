@@ -1,7 +1,6 @@
 module Data.Lens.Barlow where
 
-import Prelude
-
+import Prelude (Unit, (<<<))
 import Data.Either (Either)
 import Data.Generic.Rep (class Generic, Argument, Constructor, NoArguments, Product, Sum)
 import Data.Lens (class Wander, Optic', _Just, _Left, _Right, traversed)
@@ -14,104 +13,10 @@ import Data.Profunctor.Choice (class Choice)
 import Data.Profunctor.Strong (class Strong)
 import Data.Traversable (class Traversable)
 import Prim.Row as Row
-import Prim.Symbol as Symbol
 import Type.Prelude (class IsSymbol)
 import Type.Proxy (Proxy(..))
-
--- typelevel list
-data TList
-
-foreign import data TNil :: TList
-
-foreign import data TCons :: forall k. k -> TList -> TList
-
--- ADT representing the different types of lenses at the type level
-data LensType
-
-foreign import data QuestionMark :: LensType
-
-foreign import data RightArrow :: LensType
-
-foreign import data LeftArrow :: LensType
-
-foreign import data Plus :: LensType
-
-foreign import data ExclamationMark :: LensType
-
-foreign import data RecordField :: Symbol -> LensType
-
-
-class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attributes
-
-class Parse1Symbol (head :: Symbol) (tail :: Symbol) (out :: TList) | head tail -> out
-
-class ParseRecordField (head :: Symbol) (tail :: Symbol) (out :: Symbol) (rest :: Symbol) | head tail -> out rest
-
-instance parserecordfieldDot :: ParseRecordField "." t "" t
-else instance parserecordfieldQuestionMark :: (Symbol.Cons "?" t out) => ParseRecordField "?" t "" out
-else instance parserecordfieldLeftArrow :: (Symbol.Cons "<" t out) => ParseRecordField "<" t "" out
-else instance parserecordfieldRightArrow :: (Symbol.Cons ">" t out) => ParseRecordField ">" t "" out
-else instance parserecordfieldPlus :: (Symbol.Cons "+" t out) => ParseRecordField "+" t "" out
-else instance parserecordfieldExclamationMark :: (Symbol.Cons "!" t out) => ParseRecordField "!" t "" out
-else instance parserecordfieldEnd :: ParseRecordField h "" h ""
-else instance parserecordfieldCons ::
-  ( Symbol.Cons th tt t
-  , ParseRecordField th tt tout trest
-  , Symbol.Cons h tout out 
-  ) =>
-  ParseRecordField h t out trest 
-
-instance parse1Nil :: Parse1Symbol a "" (TCons (RecordField a) TNil)
-else instance parse1Dot ::
-  ( ParseSymbol s rest
-    ) =>
-  Parse1Symbol "." s rest
-else instance parse1QuestionMark ::
-  ( ParseSymbol s rest
-    ) =>
-  Parse1Symbol "?" s (TCons QuestionMark rest)
-else instance parse1RightArrow ::
-  ( ParseSymbol s rest
-    ) =>
-  Parse1Symbol ">" s (TCons RightArrow rest)
-else instance parse1LeftArrow ::
-  ( ParseSymbol s rest
-    ) =>
-  Parse1Symbol "<" s (TCons LeftArrow rest)
-else instance parse1Plus ::
-  ( ParseSymbol s rest
-    ) =>
-  Parse1Symbol "+" s (TCons Plus rest)
-else instance parse1ExclamationMark ::
-  ( ParseSymbol s rest
-    ) =>
-  Parse1Symbol "!" s (TCons ExclamationMark rest)
-else instance parse1Other ::
-  ( Symbol.Cons th tt t
-  , ParseRecordField th tt tout trest
-  , Symbol.Cons h tout out 
-  , ParseSymbol trest rest
-  ) =>
-  Parse1Symbol h t (TCons (RecordField out) rest)
-
-instance parseNilQuestionMark ::
-  ParseSymbol "?" (TCons QuestionMark TNil)
-else instance parseNilRightArrow ::
-  ParseSymbol ">" (TCons RightArrow TNil)
-else instance parseNilLeftArrow ::
-  ParseSymbol "<" (TCons LeftArrow TNil)
-else instance parseNilPlus ::
-  ParseSymbol "+" (TCons Plus TNil)
-else instance parseNilExclamationMark ::
-  ParseSymbol "!" (TCons ExclamationMark TNil)
-else instance parseNil ::
-  ParseSymbol "" TNil
-else instance parseCons ::
-  ( Symbol.Cons h t string
-  , Parse1Symbol h t fl
-  ) =>
-  ParseSymbol string fl
-
+import Data.Lens.Barlow.Parser
+import Data.Lens.Barlow.Types (ExclamationMark, LeftArrow, Plus, QuestionMark, RecordField, RightArrow, TCons, TList, TNil)
 
 class ConstructBarlowGeneric (attributes :: TList) p input output | attributes input -> output where
   constructBarlowGeneric :: Proxy attributes -> Optic' p input output
@@ -135,8 +40,6 @@ class ConstructBarlowGeneric (attributes :: TList) p input output | attributes i
 (Inr (Inl (Constructor @"B10" (Product (Argument Yellow) (Product (Argument "adios") (Argument 16))))))
 (Inr (Inr (Constructor @"C10" (Product (Argument "uno") (Product (Argument "dos") (Argument "tres"))))))
 -}
-
-
 instance cbgNilLeftArrowConstructorNoArguments ::
   ( Strong p
   , Choice p
@@ -144,10 +47,9 @@ instance cbgNilLeftArrowConstructorNoArguments ::
   ConstructBarlowGeneric
     (TCons LeftArrow TNil)
     p
-    (Constructor sym NoArguments) 
+    (Constructor sym NoArguments)
     Unit where
   constructBarlowGeneric _ = _Constructor <<< _NoArguments
-
 -- -- Cons instance for left arrow generic with one argument
 else instance cbgNilLeftArrowConstructorArgument ::
   ( Strong p
@@ -158,8 +60,7 @@ else instance cbgNilLeftArrowConstructorArgument ::
     p
     (Constructor sym (Argument output))
     output where
-  constructBarlowGeneric _ = _Constructor <<< _Argument 
-
+  constructBarlowGeneric _ = _Constructor <<< _Argument
 else instance cbgConsLeftArrowConstructorArgument ::
   ( ConstructBarlow rest p restR output
   , Strong p
@@ -170,8 +71,6 @@ else instance cbgConsLeftArrowConstructorArgument ::
     (Constructor sym (Argument restR))
     output where
   constructBarlowGeneric _ = _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
-
-
 else instance cbgConstructorProduct ::
   ( ConstructBarlowGeneric rest p restR output
   , Strong p
@@ -182,7 +81,6 @@ else instance cbgConstructorProduct ::
     (Constructor sym restR)
     output where
   constructBarlowGeneric _ = _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
-
 else instance cbgConsLeftArrowSum ::
   ( ConstructBarlowGeneric rest p restR output
   , Choice p
@@ -193,7 +91,6 @@ else instance cbgConsLeftArrowSum ::
     (Sum restR r)
     output where
   constructBarlowGeneric _ = _SumLeft <<< constructBarlowGeneric (Proxy :: Proxy rest)
-
 else instance cbgConsRightArrowSum ::
   ( ConstructBarlowGeneric rest p restR output
   , Choice p
@@ -204,17 +101,15 @@ else instance cbgConsRightArrowSum ::
     (Sum l restR)
     output where
   constructBarlowGeneric _ = _SumRight <<< constructBarlowGeneric (Proxy :: Proxy rest)
-
 else instance cbgNilLeftArrowProduct ::
   ( Strong p
-  ) =>
+    ) =>
   ConstructBarlowGeneric
     (TCons LeftArrow TNil)
     p
     (Product (Argument output) r)
     output where
   constructBarlowGeneric _ = _ProductLeft <<< _Argument
-
 else instance cbgConsLeftArrowProduct ::
   ( ConstructBarlow rest p restR output
   , Strong p
@@ -225,17 +120,15 @@ else instance cbgConsLeftArrowProduct ::
     (Product (Argument restR) r)
     output where
   constructBarlowGeneric _ = _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
-
 else instance cbgNilRightArrowProductArgument ::
   ( Strong p
-  ) =>
+    ) =>
   ConstructBarlowGeneric
     (TCons RightArrow TNil)
     p
     (Product l (Argument output))
     output where
   constructBarlowGeneric _ = _ProductRight <<< _Argument
-  
 else instance cbgConsRightArrowProductArgument ::
   ( ConstructBarlow rest p restR output
   , Strong p
@@ -245,8 +138,7 @@ else instance cbgConsRightArrowProductArgument ::
     p
     (Product l (Argument restR))
     output where
-  constructBarlowGeneric _ = _ProductRight <<< _Argument <<<  constructBarlow (Proxy :: Proxy rest)
-
+  constructBarlowGeneric _ = _ProductRight <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 else instance cbgRightArrowProductRecursive ::
   ( ConstructBarlowGeneric rest p restR output
   , Strong p
@@ -258,11 +150,8 @@ else instance cbgRightArrowProductRecursive ::
     output where
   constructBarlowGeneric _ = _ProductRight <<< constructBarlowGeneric (Proxy :: Proxy rest)
 
-
-
 class ConstructBarlow (attributes :: TList) p input output | attributes input -> output where
   constructBarlow :: Proxy attributes -> Optic' p input output
-
 
 -- Nil instance for question mark 
 instance constructBarlowNilQuestionMark ::
@@ -304,8 +193,6 @@ else instance constructBarlowNil ::
   ) =>
   ConstructBarlow (TCons (RecordField sym) TNil) p (Record x) output where
   constructBarlow _ = prop (Proxy :: Proxy sym)
-
-
 -- Cons instance for question mark
 else instance constructBarlowConsQuestionMark ::
   ( ConstructBarlow rest p restR output
@@ -377,11 +264,9 @@ else instance constructBarlowCons ::
   ) =>
   ConstructBarlow (TCons (RecordField sym) rest) p { | rl } output where
   constructBarlow _ = prop (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
-
-
 -- Cons instance for generic
 else instance constructBarlowNilGeneric ::
-  ( Generic input rep 
+  ( Generic input rep
   , ConstructBarlowGeneric tlist p rep output
   , Strong p
   , Choice p
@@ -392,8 +277,6 @@ else instance constructBarlowNilGeneric ::
     input
     output where
   constructBarlow _ = _ToGeneric <<< constructBarlowGeneric (Proxy :: Proxy tlist)
-
-
 
 class Barlow (string :: Symbol) p input output | string -> input output where
   -- | Type-safe lens for zooming into a deeply nested record
