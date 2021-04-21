@@ -1,14 +1,17 @@
 module Data.Lens.BarloGenericSpec where
 
 import Data.Generic.Rep (class Generic)
-import Data.Lens (view)
+import Data.Lens (over, preview, view)
 import Data.Lens.Barlow (barlow, key)
+import Data.Maybe (Maybe(..))
 import Data.Show (class Show)
 import Data.Show.Generic (genericShow)
+import Data.String (toUpper)
 import Data.Unit (unit)
 import Prelude (Unit, discard)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
+import Data.Eq (class Eq)
 
 data Zodiac1
   = Virgo1 
@@ -58,6 +61,31 @@ derive instance genericZodiac6 :: Generic Zodiac6 _
 instance showZodiac6 :: Show Zodiac6 where
   show = genericShow
 
+data Zodiac7
+  = Carina7 String | Virgo7 String | CanisMaior7 String 
+
+derive instance genericZodiac7 :: Generic Zodiac7 _
+
+instance showZodiac7 :: Show Zodiac7 where
+  show = genericShow
+
+data Zodiac8
+  = Virgo8 { alpha :: String } { beta :: String } { gamma:: String } { delta :: String }
+
+derive instance genericZodiac8 :: Generic Zodiac8 _
+
+instance showZodiac8 :: Show Zodiac8 where
+  show = genericShow
+
+data Zodiac9
+  = Carina9 { alpha :: String } | Virgo9 { alpha :: String } { beta :: String } { gamma:: String } { delta :: String } | CanisMaior9 String 
+
+derive instance genericZodiac9 :: Generic Zodiac9 _
+derive instance eqZodiac9 :: Eq Zodiac9
+
+instance showZodiac9 :: Show Zodiac9 where
+  show = genericShow
+
 spec :: Spec Unit
 spec =
   describe "Data.Lens.Barlow" do
@@ -100,8 +128,8 @@ spec =
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo<<.alpha")) sky
-        actual `shouldEqual` "Spica"
+          actual = preview (barlow (key :: _ "zodiac.virgo<<.alpha")) sky
+        actual `shouldEqual` (Just "Spica")
       it "should view into a sum type right case" do
         let
           sky =
@@ -112,8 +140,8 @@ spec =
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo><.beta")) sky
-        actual `shouldEqual` "β Car"
+          actual = preview (barlow (key :: _ "zodiac.virgo><.beta")) sky
+        actual `shouldEqual` (Just "β Car")
       it "should view into a sum with product type right case" do
         let
           sky =
@@ -124,8 +152,8 @@ spec =
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo>.>>>.delta")) sky
-        actual `shouldEqual` "δ Vir"
+          actual = preview (barlow (key :: _ "zodiac.virgo>.>>>.delta")) sky
+        actual `shouldEqual` (Just "δ Vir")
 
       it "should view into a sum with product type right case" do
         let
@@ -133,5 +161,42 @@ spec =
             { zodiac: Centaurus6 "Rigil Kentaurus"
             }
 
-          actual = view (barlow (key :: _ "zodiac>>>><")) sky
-        actual `shouldEqual` "Rigil Kentaurus"
+          actual = preview (barlow (key :: _ "zodiac>>>><")) sky
+        actual `shouldEqual` (Just "Rigil Kentaurus")
+
+      it "should view into a sum " do
+        let
+          sky =
+            { zodiac: CanisMaior7 "Sirius"
+            }
+
+          actual = preview (barlow (key :: _ "zodiac>><")) sky
+        actual `shouldEqual` (Just "Sirius")
+      
+      it "should view into a product type" do
+        let
+          sky =
+            { zodiac:
+                { virgo:
+                    Virgo8 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
+                }
+            }
+
+          actual = preview (barlow (key :: _ "zodiac.virgo>>>.delta")) sky
+        actual `shouldEqual` (Just "δ Vir")
+      it "should view into a sum with product type right case" do
+        let
+          sky =
+            { zodiac:
+                { virgo:
+                    Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
+                }
+            }
+
+          actual = over (barlow (key :: _ "zodiac.virgo><.>>>.delta")) toUpper sky
+        actual `shouldEqual`
+           { zodiac:
+                { virgo:
+                    Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"}
+                }
+            }
