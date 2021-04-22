@@ -1,7 +1,40 @@
 module Data.Lens.Barlow.Parser where
 
-import Prim.Symbol as Symbol
 import Data.Lens.Barlow.Types
+
+import Prim.Symbol as Symbol
+import Type.Proxy (Proxy(..))
+
+class ParsePercentage :: forall k. Symbol -> Symbol -> k -> Symbol -> Constraint
+class ParsePercentage (head :: Symbol) (tail :: Symbol) out (rest :: Symbol) | head tail -> out rest
+
+class ParsePercentageSymbol (head :: Symbol) (tail :: Symbol) (out :: Symbol) (rest :: Symbol) | head tail -> out rest
+
+instance parsePercentageSymbolDot :: ParsePercentageSymbol "." t "" t
+else instance parsePercentageSymbolSpace :: ParsePercentageSymbol " " t "" t
+else instance parsePercentageSymbolEnd :: ParsePercentageSymbol h "" h ""
+else instance parsePercentageSymbolCons :: (
+  Symbol.Cons th tt t 
+, ParsePercentageSymbol th tt tout trest 
+, Symbol.Cons h tout out
+) => ParsePercentageSymbol h t out trest 
+
+instance parsePercentage1 :: ParsePercentage "1" t N1 t 
+else instance parsePercentage2 :: ParsePercentage "2" t N2 t
+else instance parsePercentage3 :: ParsePercentage "3" t N3 t
+else instance parsePercentage4 :: ParsePercentage "4" t N4 t
+else instance parsePercentage5 :: ParsePercentage "5" t N5 t
+else instance parsePercentage6 :: ParsePercentage "6" t N6 t
+else instance parsePercentage7 :: ParsePercentage "7" t N7 t
+else instance parsePercentage8 :: ParsePercentage "8" t N8 t
+else instance parsePercentage9 :: ParsePercentage "9" t N9 t
+else instance parsePercentageEnd :: ParsePercentage h "" h ""
+else instance parsePercentagSym :: (
+  Symbol.Cons th tt t 
+, ParsePercentageSymbol th tt tout trest 
+, Symbol.Cons h tout out
+) => ParsePercentage h t out trest 
+
 
 class ParseSymbol (string :: Symbol) (attributes :: TList) | string -> attributes
 
@@ -48,6 +81,13 @@ else instance parse1ExclamationMark ::
   ( ParseSymbol s rest
     ) =>
   Parse1Symbol "!" s (TCons ExclamationMark rest)
+else instance parse1Percentage ::
+  (
+    Symbol.Cons th tt t 
+  , ParsePercentage th tt tout trest 
+  , ParseSymbol trest rest
+  ) => 
+  Parse1Symbol "%" t (TCons (Percentage tout) rest)
 else instance parse1Other ::
   ( Symbol.Cons th tt t
   , ParseRecordField th tt tout trest
@@ -73,3 +113,14 @@ else instance parseCons ::
   , Parse1Symbol h t fl
   ) =>
   ParseSymbol string fl
+
+
+tshow :: forall sym tlist. ParseSymbol sym tlist => Proxy sym -> Proxy tlist 
+tshow _ = Proxy 
+
+
+x :: Proxy (TCons (Percentage (S Z)) (TCons (RecordField "abc") TNil))
+x = tshow (Proxy :: Proxy "%1.abc")
+
+y :: Proxy (TCons (RecordField "abc") (TCons (Percentage "Red") (TCons (RecordField "xyz") TNil)))
+y = tshow (Proxy :: Proxy "abc.%Red.xyz")

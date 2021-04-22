@@ -19,5 +19,4 @@
 - Support for `Maybe` using `?`
 
 ## v0.1.0
-
 - Support for records
