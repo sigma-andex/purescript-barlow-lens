@@ -17,11 +17,13 @@ import Prim.Row as Row
 import Type.Prelude (class IsSymbol)
 import Type.Proxy (Proxy(..))
 
+-- Type class for barlow lens construction of generic representations. 
+-- This type class is never instantiated immediately, but rather if ConstructBarlow fails.
 class ConstructBarlowGeneric (attributes :: TList) p input output | attributes input -> output where
   constructBarlowGeneric :: Proxy attributes -> Optic' p input output
 
 {-
-These are examples of generic representations. Keeping them here fore reference.
+These are examples of generic representations. Keeping them here for reference.
 (Constructor @"A1" NoArguments)
 (Constructor @"A2" (Argument "hallo"))
 (Constructor @"A3" (Argument Red))
@@ -40,29 +42,25 @@ These are examples of generic representations. Keeping them here fore reference.
 (Inr (Inl (Constructor @"B10" (Product (Argument Yellow) (Product (Argument "adios") (Argument 16))))))
 (Inr (Inr (Constructor @"C10" (Product (Argument "uno") (Product (Argument "dos") (Argument "tres"))))))
 -}
-
 --------- PERCENTAGE SINGLETON CONSTRUCTOR -----------
-
 instance cbgNilPercentageZeroArgumentConstructor ::
-  ( Strong p 
-  ) =>
+  ( Strong p
+    ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
     p
     (Constructor sym NoArguments)
     Unit where
   constructBarlowGeneric _ = _Constructor <<< _NoArguments
-
 else instance cbgNilPercentageOneArgumentConstructor ::
   ( Strong p
-  ) =>
+    ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
     p
     (Constructor sym (Argument output))
     output where
   constructBarlowGeneric _ = _Constructor <<< _Argument
-
 else instance cbgConsPercentageOneArgumentConstructor ::
   ( ConstructBarlow rest p restR output
   , Strong p
@@ -73,7 +71,6 @@ else instance cbgConsPercentageOneArgumentConstructor ::
     (Constructor sym (Argument restR))
     output where
   constructBarlowGeneric _ = _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
-
 else instance cbgConsPercentageMultiArgumentConstructor ::
   ( ConstructBarlowGeneric rest p restR output
   , Strong p
@@ -84,12 +81,10 @@ else instance cbgConsPercentageMultiArgumentConstructor ::
     (Constructor sym restR)
     output where
   constructBarlowGeneric _ = _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
-
-
 --------- PERCENTAGE LEFT SUM -----------------------
 else instance cbgNilPercentageZeroArgumentLeftSum ::
   ( Choice p
-  , Strong p 
+  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -97,7 +92,6 @@ else instance cbgNilPercentageZeroArgumentLeftSum ::
     (Sum (Constructor sym NoArguments) r)
     Unit where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _NoArguments
-
 else instance cbgNilPercentageOneArgumentLeftSum ::
   ( Choice p
   , Strong p
@@ -108,7 +102,6 @@ else instance cbgNilPercentageOneArgumentLeftSum ::
     (Sum (Constructor sym (Argument output)) r)
     output where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _Argument
-
 else instance cbgConsPercentageOneArgumentLeftSum ::
   ( ConstructBarlow rest p restR output
   , Choice p
@@ -120,7 +113,6 @@ else instance cbgConsPercentageOneArgumentLeftSum ::
     (Sum (Constructor sym (Argument restR)) r)
     output where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
-
 else instance cbgConsPercentageMultiArgumentLeftSum ::
   ( ConstructBarlowGeneric rest p restR output
   , Choice p
@@ -132,12 +124,10 @@ else instance cbgConsPercentageMultiArgumentLeftSum ::
     (Sum (Constructor sym restR) r)
     output where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
-
 --------- PERCENTAGE RIGHT SUM -----------------------
-
 else instance cbgNilPercentageZeroArgumentRightSum ::
   ( Choice p
-  , Strong p 
+  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -145,10 +135,9 @@ else instance cbgNilPercentageZeroArgumentRightSum ::
     (Sum l (Constructor sym NoArguments))
     Unit where
   constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _NoArguments
-
 else instance cbgNilPercentageOneArgumentRightSum ::
   ( Choice p
-  , Strong p 
+  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -156,19 +145,17 @@ else instance cbgNilPercentageOneArgumentRightSum ::
     (Sum l (Constructor sym (Argument output)))
     output where
   constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _Argument
-
 else instance cbgConsRightPercentageOneSum ::
   ( ConstructBarlow rest p restR output
   , Choice p
-  , Strong p 
+  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
     p
     (Sum l (Constructor sym (Argument restR)))
     output where
-  constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest) 
-
+  constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 else instance cbgConsRightPercentageManySum ::
   ( ConstructBarlowGeneric (TCons (Percentage sym) rest) p restR output
   , Choice p
@@ -179,9 +166,7 @@ else instance cbgConsRightPercentageManySum ::
     (Sum l restR)
     output where
   constructBarlowGeneric _ = _SumRight <<< constructBarlowGeneric (Proxy :: Proxy (TCons (Percentage sym) rest))
-
 --------- PERCENTAGE LEFT PRODUCT -----------------------
-
 else instance cbgNilPercentageOneArgumentLeftProduct ::
   ( Strong p
     ) =>
@@ -191,18 +176,17 @@ else instance cbgNilPercentageOneArgumentLeftProduct ::
     (Product (Argument output) r)
     output where
   constructBarlowGeneric _ = _ProductLeft <<< _Argument
-
 else instance cbgConsPercentageOneArgumentLeftProduct ::
   ( ConstructBarlow rest p restR output
   , Strong p
-    ) =>
+  ) =>
   ConstructBarlowGeneric
     (TCons (Percentage N1) rest)
     p
     (Product (Argument restR) r)
     output where
-  constructBarlowGeneric _ = _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest) 
-
+  constructBarlowGeneric _ = _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
+--------- PERCENTAGE RIGHT PRODUCT -----------------------
 else instance cbgNilPercentageOneArgumentRightProduct ::
   ( Strong p
     ) =>
@@ -212,7 +196,6 @@ else instance cbgNilPercentageOneArgumentRightProduct ::
     (Argument output)
     output where
   constructBarlowGeneric _ = _Argument
-
 else instance cbgConsPercentageOneArgumentRightProduct ::
   ( ConstructBarlow rest p restR output
   , Strong p
@@ -223,7 +206,6 @@ else instance cbgConsPercentageOneArgumentRightProduct ::
     (Argument restR)
     output where
   constructBarlowGeneric _ = _Argument <<< constructBarlow (Proxy :: Proxy rest)
-
 else instance cbgPercentageRightProduct ::
   ( ConstructBarlowGeneric (TCons (Percentage k) rest) p restR output
   , Strong p
@@ -235,8 +217,7 @@ else instance cbgPercentageRightProduct ::
     output where
   constructBarlowGeneric _ = _ProductRight <<< constructBarlowGeneric (Proxy :: Proxy (TCons (Percentage k) rest))
 
-
-
+-- Typeclass for constructing a barlow lenses from a typelevel list and an input type.
 class ConstructBarlow (attributes :: TList) p input output | attributes input -> output where
   constructBarlow :: Proxy attributes -> Optic' p input output
 
