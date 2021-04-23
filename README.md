@@ -123,56 +123,17 @@ preview (barlow (key :: _ "zodiac?.virgo!.alpha")) sky
 
 Barlow now supports zooming into arbitrary sum and product data types as long as there is a `Generic` instance. 
 
-Use `<` and `>` to zoom into the left and right cases of your sum type. 
+Use `%<NAME>` to zoom into sum types, where `<NAME>` is the name of your data constructor. E.g. `%Virgo` for the data constructor `Virgo`. 
 
-```purescript
-data Zodiac
-  = Carina String | Virgo String | CanisMaior String 
+Use `%i` to zoom into product types, where `i` is an integer between 1 and 9. Note that counting for product types and tuples usually starts with 1 and not 0. So the first element of a product is `%1`.
 
-derive instance genericZodiac :: Generic Zodiac _
-
-instance showZodiac :: Show Zodiac where
-  show = genericShow
-
-sky =
-  { zodiac: CanisMaior "Sirius"
-  }
-
--- Twice to the right for CanisMaior, once to the left for the String 
-actual = preview (barlow (key :: _ "zodiac>><")) sky
--- Just "Sirius"
-```
-
-Use `<` and `>` to zoom into the left and right cases of your product type. 
-
-```purescript
-data Zodiac
-  = Virgo { alpha :: String } { beta :: String } { gamma :: String } { delta :: String }
-
-derive instance genericZodiac :: Generic Zodiac _
-
-instance showZodiac :: Show Zodiac where
-  show = genericShow
-
-sky =
-  { zodiac:
-      { virgo:
-          Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
-      }
-  }
-
-actual = preview (barlow (key :: _ "zodiac.virgo>>>.delta")) sky
--- (Just "δ Vir")
-```
-
-And you can of course combine them. It is more readable if you separate your sum lens from your product lens with a `.` dot. 
+It is more readable if you separate your sum lens from your product lens with a `.` dot. 
 
 ```purescript 
 data Zodiac
   = Carina { alpha :: String } | Virgo { alpha :: String } { beta :: String } { gamma :: String } { delta :: String } | CanisMaior String 
 
 derive instance genericZodiac :: Generic Zodiac _
-derive instance eqZodiac :: Eq Zodiac
 
 instance showZodiac :: Show Zodiac where
   show = genericShow
@@ -184,7 +145,7 @@ sky =
       }
   }
 
-over (barlow (key :: _ "zodiac.virgo><.>>>.delta")) toUpper sky
+over (barlow (key :: _ "zodiac.virgo.%Virgo.%4.delta")) toUpper sky
 -- { zodiac: { virgo: Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} } }
 ```
 

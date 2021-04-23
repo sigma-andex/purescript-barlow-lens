@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.0
+- Refactor support for algebraic data types
+- Removed `<` and `>` for ADTs 
+- Introduced `%Name` syntax for sum types
+- Introduced `%i` syntax for product types
+
 ## v0.6.0
 - Add expiremental support for algebraic data types 
 - Refactoring: Break up code into different modules
