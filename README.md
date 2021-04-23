@@ -34,7 +34,7 @@ over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
 Barlow supports lens creation for the following types:
 - 📦🐈 [`Maybe`](#Maybe)
 - 🤷🏽‍♀️ [`Either`](#Either)
-- 📜 [`Array`](#Array-and-other-Traversables)
+- 📜 [`Array`](#Array-and-other-Traversables) (and other `Traversable`s)
 - 🎁 [`Newtype`](#Newtype)
 - 🤖 [`Data types`](#Data-types-experimental) (experimental)
 
