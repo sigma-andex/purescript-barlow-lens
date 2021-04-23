@@ -113,14 +113,3 @@ else instance parseCons ::
   , Parse1Symbol h t fl
   ) =>
   ParseSymbol string fl
-
-
-tshow :: forall sym tlist. ParseSymbol sym tlist => Proxy sym -> Proxy tlist 
-tshow _ = Proxy 
-
-
-x :: Proxy (TCons (Percentage (S Z)) (TCons (RecordField "abc") TNil))
-x = tshow (Proxy :: Proxy "%1.abc")
-
-y :: Proxy (TCons (RecordField "abc") (TCons (Percentage "Red") (TCons (RecordField "xyz") TNil)))
-y = tshow (Proxy :: Proxy "abc.%Red.xyz")
