@@ -131,7 +131,9 @@ It is more readable if you separate your sum lens from your product lens with a 
 
 ```purescript 
 data Zodiac
-  = Carina { alpha :: String } | Virgo { alpha :: String } { beta :: String } { gamma :: String } { delta :: String } | CanisMaior String 
+  = Carina { alpha :: String } 
+  | Virgo { alpha :: String } { beta :: String } { gamma :: String } { delta :: String } 
+  | CanisMaior String 
 
 derive instance genericZodiac :: Generic Zodiac _
 
