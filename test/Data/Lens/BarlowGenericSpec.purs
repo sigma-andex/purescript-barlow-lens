@@ -187,15 +187,11 @@ spec =
         let
           sky =
             { zodiac:
-                { virgo:
-                    Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
-                }
+                Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
             }
 
-          actual = over (barlow (key :: _ "zodiac.virgo.%Virgo9.%4.delta")) toUpper sky
+          actual = over (barlow (key :: _ "zodiac.%Virgo9.%4.delta")) toUpper sky
         actual `shouldEqual`
            { zodiac:
-                { virgo:
-                    Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"}
-                }
+                Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"}
             }

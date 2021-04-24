@@ -140,13 +140,11 @@ instance showZodiac :: Show Zodiac where
 
 sky =
   { zodiac:
-      { virgo:
-          Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
-      }
+      Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
   }
 
-over (barlow (key :: _ "zodiac.virgo.%Virgo.%4.delta")) toUpper sky
--- { zodiac: { virgo: Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} } }
+over (barlow (key :: _ "zodiac.%Virgo.%4.delta")) toUpper sky
+-- { zodiac: Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} }
 ```
 
 ## Credits
