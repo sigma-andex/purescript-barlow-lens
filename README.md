@@ -146,9 +146,9 @@ sky =
   }
 
 over (barlow (key :: _ "zodiac.virgo.%Virgo.%4.delta")) toUpper sky
--- { zodiac: { virgo: Virgo9 { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} } }
+-- { zodiac: { virgo: Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} } }
 ```
 
 ## Credits
 
-This lib was heavily inspired by this incredible [blog post](https://blog.csongor.co.uk/purescript-safe-printf/#The%20problem). Thanks also to @i-am-the-slime for pushing further and reviewing my PRs. 
+This lib was heavily inspired by this incredible [blog post](https://blog.csongor.co.uk/purescript-safe-printf/#The%20problem). Thanks also to @i-am-the-slime for pushing me to go further and for reviewing my PRs. 
