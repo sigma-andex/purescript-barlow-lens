@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.1
+- Bugfix: Remove unnecessary constraint on Newtype instance causing exclamation mark not working with view.
+
 ## v0.7.0
 - Refactor support for algebraic data types
 - Remove `<` and `>` for ADTs 
