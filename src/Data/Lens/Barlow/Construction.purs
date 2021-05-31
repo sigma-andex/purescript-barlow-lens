@@ -54,7 +54,7 @@ instance cbgNilPercentageZeroArgumentConstructor ::
     Unit where
   constructBarlowGeneric _ = _Constructor <<< _NoArguments
 else instance cbgNilPercentageOneArgumentConstructor ::
-  ( Strong p
+  ( Profunctor p
     ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -64,7 +64,7 @@ else instance cbgNilPercentageOneArgumentConstructor ::
   constructBarlowGeneric _ = _Constructor <<< _Argument
 else instance cbgConsPercentageOneArgumentConstructor ::
   ( ConstructBarlow rest p restR output
-  , Strong p
+  , Profunctor p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
@@ -74,7 +74,7 @@ else instance cbgConsPercentageOneArgumentConstructor ::
   constructBarlowGeneric _ = _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 else instance cbgConsPercentageMultiArgumentConstructor ::
   ( ConstructBarlowGeneric rest p restR output
-  , Strong p
+  , Profunctor p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
@@ -95,7 +95,6 @@ else instance cbgNilPercentageZeroArgumentLeftSum ::
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _NoArguments
 else instance cbgNilPercentageOneArgumentLeftSum ::
   ( Choice p
-  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -106,7 +105,6 @@ else instance cbgNilPercentageOneArgumentLeftSum ::
 else instance cbgConsPercentageOneArgumentLeftSum ::
   ( ConstructBarlow rest p restR output
   , Choice p
-  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
@@ -117,7 +115,6 @@ else instance cbgConsPercentageOneArgumentLeftSum ::
 else instance cbgConsPercentageMultiArgumentLeftSum ::
   ( ConstructBarlowGeneric rest p restR output
   , Choice p
-  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
@@ -138,7 +135,6 @@ else instance cbgNilPercentageZeroArgumentRightSum ::
   constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _NoArguments
 else instance cbgNilPercentageOneArgumentRightSum ::
   ( Choice p
-  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -149,7 +145,6 @@ else instance cbgNilPercentageOneArgumentRightSum ::
 else instance cbgConsRightPercentageOneSum ::
   ( ConstructBarlow rest p restR output
   , Choice p
-  , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
@@ -189,7 +184,7 @@ else instance cbgConsPercentageOneArgumentLeftProduct ::
   constructBarlowGeneric _ = _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 --------- PERCENTAGE RIGHT PRODUCT -----------------------
 else instance cbgNilPercentageOneArgumentRightProduct ::
-  ( Strong p
+  ( Profunctor p
     ) =>
   ConstructBarlowGeneric
     (TCons (Percentage N1) TNil)
@@ -199,7 +194,7 @@ else instance cbgNilPercentageOneArgumentRightProduct ::
   constructBarlowGeneric _ = _Argument
 else instance cbgConsPercentageOneArgumentRightProduct ::
   ( ConstructBarlow rest p restR output
-  , Strong p
+  , Profunctor p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage N1) rest)
@@ -265,7 +260,6 @@ else instance constructBarlowNil ::
 -- Cons instance for question mark
 else instance constructBarlowConsQuestionMark ::
   ( ConstructBarlow rest p restR output
-  , Strong p
   , Choice p
   ) =>
   ConstructBarlow
@@ -277,7 +271,6 @@ else instance constructBarlowConsQuestionMark ::
 -- Cons instance for right arrow
 else instance constructBarlowConsRightArrow ::
   ( ConstructBarlow rest p restR output
-  , Strong p
   , Choice p
   ) =>
   ConstructBarlow
@@ -289,7 +282,6 @@ else instance constructBarlowConsRightArrow ::
 -- Cons instance for left arrow
 else instance constructBarlowConsLeftArrow ::
   ( ConstructBarlow rest p restR output
-  , Strong p
   , Choice p
   ) =>
   ConstructBarlow
@@ -301,7 +293,6 @@ else instance constructBarlowConsLeftArrow ::
 -- Cons instance for plus
 else instance constructBarlowConsPlus ::
   ( ConstructBarlow rest p restR output
-  , Strong p
   , Wander p
   , Traversable t
   ) =>
@@ -336,8 +327,7 @@ else instance constructBarlowCons ::
 else instance constructBarlowConsNilGeneric ::
   ( Generic input rep
   , ConstructBarlowGeneric tlist p rep output
-  , Strong p
-  , Choice p
+  , Profunctor p
   ) =>
   ConstructBarlow
     tlist
