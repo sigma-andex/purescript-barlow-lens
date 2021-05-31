@@ -315,7 +315,7 @@ else instance constructBarlowConsPlus ::
 else instance constructBarlowConsExclamationMark ::
   ( ConstructBarlow rest p restR output
   , Newtype nt restR
-  , Strong p
+  , Profunctor p
   ) =>
   ConstructBarlow
     (TCons ExclamationMark rest)
