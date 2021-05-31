@@ -248,7 +248,7 @@ else instance constructBarlowNilPlus ::
   constructBarlow _ = traversed
 -- Nil instance for exclamation mark  
 else instance constructBarlowNilExclamationMark ::
-  ( Choice p
+  ( Profunctor p
   , Newtype nt output
   ) =>
   ConstructBarlow (TCons ExclamationMark TNil) p nt output where
