@@ -9,6 +9,7 @@ import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
+import Data.Profunctor (class Profunctor)
 import Data.Profunctor.Choice (class Choice)
 import Data.Profunctor.Strong (class Strong)
 import Data.Traversable (class Traversable)
@@ -248,7 +249,7 @@ else instance constructBarlowNilPlus ::
   constructBarlow _ = traversed
 -- Nil instance for exclamation mark  
 else instance constructBarlowNilExclamationMark ::
-  ( Choice p
+  ( Profunctor p
   , Newtype nt output
   ) =>
   ConstructBarlow (TCons ExclamationMark TNil) p nt output where
@@ -314,7 +315,7 @@ else instance constructBarlowConsPlus ::
 else instance constructBarlowConsExclamationMark ::
   ( ConstructBarlow rest p restR output
   , Newtype nt restR
-  , Strong p
+  , Profunctor p
   ) =>
   ConstructBarlow
     (TCons ExclamationMark rest)
