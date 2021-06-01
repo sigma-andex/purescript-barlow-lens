@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.2
+- Bugfix: Remove unnecessary constraints resulting in type errors when explicitely adding the type annotations.
+
 ## v0.7.1
 - Bugfix: Remove unnecessary constraint on Newtype instance causing exclamation mark not working with view.
 
