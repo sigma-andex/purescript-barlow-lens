@@ -36,7 +36,7 @@ Barlow supports lens creation for the following types:
 - 🤷🏽‍♀️ [`Either`](#Either)
 - 📜 [`Array`](#Array-and-other-Traversables) (and other `Traversable`s)
 - 🎁 [`Newtype`](#Newtype)
-- 🤖 [`Data types`](#Data-types-experimental) (experimental)
+- 🤖 [`Data types`](#Data-types)
 
 ### Deep sky 🌌
 
@@ -117,15 +117,13 @@ sky =
 preview (barlow (key :: _ "zodiac?.virgo!.alpha")) sky
 ```
 
-#### Data types (experimental)
+#### Data types
 
-**Note: This feature is still experimental and might slightly change in the future 🛸.**
-
-Barlow now supports zooming into arbitrary sum and product data types as long as there is a `Generic` instance. 
+Barlow supports zooming into arbitrary sum and product types as long as there is a `Generic` instance. 
 
 Use `%<NAME>` to zoom into sum types, where `<NAME>` is the name of your data constructor. E.g. `%Virgo` for the data constructor `Virgo`. 
 
-Use `%i` to zoom into product types, where `i` is an integer between 1 and 9. Note that counting for product types and tuples usually starts with 1 and not 0. So the first element of a product is `%1`.
+Use `%<INDEX>` to zoom into product types, where `<INDEX>` is an integer between 1 and 9. Note that counting for product types and tuples usually starts with 1 and not 0. So the first element of a product is `%1`.
 
 It is more readable if you separate your sum lens from your product lens with a `.` dot. 
 
