@@ -1,20 +1,21 @@
 { name = "barlow-lens"
 , dependencies =
-  [ "either"
+  [ "aff"
+  , "effect"
+  , "either"
   , "foldable-traversable"
+  , "lists"
   , "maybe"
   , "newtype"
   , "prelude"
   , "profunctor"
   , "profunctor-lenses"
-  , "strings"
-  , "tuples"
-  , "typelevel-prelude"
-  , "aff"
-  , "effect"
   , "psci-support"
   , "spec"
   , "spec-discovery"
+  , "strings"
+  , "tuples"
+  , "typelevel-prelude"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

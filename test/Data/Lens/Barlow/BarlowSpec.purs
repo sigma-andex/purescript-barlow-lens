@@ -1,4 +1,4 @@
-module Data.Lens.BarloSpec where
+module Data.Lens.Barlow.BarlowSpec where
 
 import Data.Either (Either(..))
 import Data.Lens (over, preview, view)
