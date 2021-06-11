@@ -1,9 +1,10 @@
 module Data.Lens.Barlow.HelpersSpec where
 
 import Prelude
+
 import Data.Either (Either(..))
 import Data.Lens.Barlow (key)
-import Data.Lens.Barlow.Helpers (overB, previewB, toArrayOfB, viewB)
+import Data.Lens.Barlow.Helpers as Barlow
 import Data.Maybe (Maybe(..))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -21,7 +22,7 @@ spec =
                     }
                 }
             }
-        viewB (key :: _ "zodiac.sagittarius.alpha") sky `shouldEqual` "Rukbat"
+        Barlow.view (key :: _ "zodiac.sagittarius.alpha") sky `shouldEqual` "Rukbat"
       it "should previewB into a record" do
         let
           sky =
@@ -33,7 +34,7 @@ spec =
                         }
                   }
             }
-        previewB (key :: _ "zodiac<.sagittarius?.alpha>") sky `shouldEqual` (Just "Rukbat")
+        Barlow.preview (key :: _ "zodiac<.sagittarius?.alpha>") sky `shouldEqual` (Just "Rukbat")
       it "should toArrayOfB into a record" do
         let
           sky =
@@ -51,7 +52,7 @@ spec =
                     }
                 }
             }
-        overB (key :: _ "zodiac.sagittarius.nebula+") (_ <> " nebula") sky `shouldEqual` expected
+        Barlow.over (key :: _ "zodiac.sagittarius.nebula+") (_ <> " nebula") sky `shouldEqual` expected
       it "should toArrayOfB into a record (2)" do
         let
           sky =
@@ -62,4 +63,4 @@ spec =
             }
 
           expected = [ "Lagoon", "Omega", "Trifid", "Red Spider", "NGC 6559", "Bug", "Cat" ]
-        toArrayOfB (key :: _ "zodiac+.nebula+") sky `shouldEqual` expected
+        Barlow.toArrayOf (key :: _ "zodiac+.nebula+") sky `shouldEqual` expected

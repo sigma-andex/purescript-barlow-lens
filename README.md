@@ -13,6 +13,10 @@ spago install barlow-lens
 ## tl;dr 
 
 ```purescript
+import Data.Lens.Barlow
+import Data.Lens.Barlow.Helpers
+import Data.String (toUpper)
+
 sky =
   { zodiac:
       { virgo:
@@ -21,17 +25,18 @@ sky =
       }
   }
 
-view (barlow (key :: _ "zodiac.virgo.alpha")) sky
+spica = view (key :: _ "zodiac.virgo.alpha") sky
 -- "Spica"
-over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
+skyUpper = over (key :: _ "zodiac.virgo.alpha") toUpper sky
 -- { zodiac: { virgo: { alpha: "SPICA" } } }
     
--- view (barlow (key :: _ "zodiac.virgo.alfa")) sky 
+-- alfa = view (key :: _ "zodiac.virgo.alfa") sky 
 -- doesn't compile
 ```
 
 ### Features 
 Barlow supports lens creation for the following types:
+- 🥇 [`Records`](#tldr)
 - 📦🐈 [`Maybe`](#Maybe)
 - 🤷🏽‍♀️ [`Either`](#Either)
 - 📜 [`Array`](#Array-and-other-Traversables) (and other `Traversable`s)
@@ -44,6 +49,9 @@ Barlow supports lens creation for the following types:
 Use `?` to zoom into a `Maybe`.
 
 ```purescript 
+import Data.Lens.Barlow
+import Data.Lens.Barlow.Helpers
+
 sky =
   { zodiac:
       Just
@@ -54,13 +62,16 @@ sky =
         }
   }
 
-preview (barlow (key :: _ "zodiac?.virgo?.alpha?")) sky
+spica = preview (key :: _ "zodiac?.virgo?.alpha?") sky
 ```
 
 #### Either
 Use `<` for `Left` and `>` for `Right` to zoom into an `Either`.
 
 ```purescript 
+import Data.Lens.Barlow
+import Data.Lens.Barlow.Helpers
+
 sky =
   { zodiac:
       Right
@@ -71,7 +82,7 @@ sky =
         }
   }
 
-preview (barlow (key :: _ "zodiac>.virgo?.alpha<")) sky
+spica = preview (key :: _ "zodiac>.virgo?.alpha<") sky
 ```
 
 
@@ -79,6 +90,8 @@ preview (barlow (key :: _ "zodiac>.virgo?.alpha<")) sky
 Use `+` to zoom into `Traversable`s like `Array`.
 
 ```purescript 
+import Data.Lens.Barlow
+import Data.Lens.Barlow.Helpers
 
 sky =
   { zodiac:
@@ -95,13 +108,16 @@ sky =
       ]
   }
 
-over (barlow (key :: _ "zodiac+.virgo?.star")) toUpper sky
+upped = over (key :: _ "zodiac+.virgo?.star") toUpper sky
 ```
 
 #### Newtype
 Use `!` to zoom into a `Newtype`.
 
 ```purescript
+import Data.Lens.Barlow
+import Data.Lens.Barlow.Helpers
+
 newtype Alpha = Alpha { alpha :: String }
 instance alphaNT :: Newtype Alpha { alpha :: String }
 
@@ -114,7 +130,7 @@ sky =
         }
   }
 
-preview (barlow (key :: _ "zodiac?.virgo!.alpha")) sky
+spica = preview (key :: _ "zodiac?.virgo!.alpha") sky
 ```
 
 #### Data types
@@ -128,6 +144,9 @@ Use `%<INDEX>` to zoom into product types, where `<INDEX>` is an integer between
 It is more readable if you separate your sum lens from your product lens with a `.` dot. 
 
 ```purescript 
+import Data.Lens.Barlow
+import Data.Lens.Barlow.Helpers
+
 data Zodiac
   = Carina { alpha :: String } 
   | Virgo { alpha :: String } { beta :: String } { gamma :: String } { delta :: String } 
@@ -135,6 +154,7 @@ data Zodiac
 
 derive instance genericZodiac :: Generic Zodiac _
 
+-- Optionally derive a show instance
 instance showZodiac :: Show Zodiac where
   show = genericShow
 
@@ -143,7 +163,7 @@ sky =
       Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
   }
 
-over (barlow (key :: _ "zodiac.%Virgo.%4.delta")) toUpper sky
+upped = over (key :: _ "zodiac.%Virgo.%4.delta") toUpper sky
 -- { zodiac: Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} }
 ```
 
