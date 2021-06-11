@@ -11,14 +11,30 @@ import Data.Maybe.First (First)
 import Data.Monoid.Endo (Endo)
 import Type.Proxy (Proxy)
 
-viewB :: forall s t a b sym lensTypes. ParseSymbol sym lensTypes => ConstructBarlow lensTypes (Forget a) s t a b => Proxy sym -> s -> a
+viewB ::
+  forall s t a b sym lensTypes.
+  ParseSymbol sym lensTypes =>
+  ConstructBarlow lensTypes (Forget a) s t a b =>
+  Proxy sym -> s -> a
 viewB = view <<< barlow
 
-previewB :: forall s t a b sym lensTypes. ParseSymbol sym lensTypes => ConstructBarlow lensTypes (Forget (First a)) s t a b => Proxy sym -> s -> Maybe a
+previewB ::
+  forall s t a b sym lensTypes.
+  ParseSymbol sym lensTypes =>
+  ConstructBarlow lensTypes (Forget (First a)) s t a b =>
+  Proxy sym -> s -> Maybe a
 previewB = preview <<< barlow
 
-overB :: forall s t a b sym lensTypes. ParseSymbol sym lensTypes => ConstructBarlow lensTypes Function s t a b => Proxy sym -> (a -> b) -> s -> t
+overB ::
+  forall s t a b sym lensTypes.
+  ParseSymbol sym lensTypes =>
+  ConstructBarlow lensTypes Function s t a b =>
+  Proxy sym -> (a -> b) -> s -> t
 overB = over <<< barlow
 
-toArrayOfB :: forall s t a b sym lenstypes. ParseSymbol sym lenstypes => ConstructBarlow lenstypes (Forget (Endo Function (List a))) s t a b => Proxy sym -> s -> Array a
+toArrayOfB ::
+  forall s t a b sym lenstypes.
+  ParseSymbol sym lenstypes =>
+  ConstructBarlow lenstypes (Forget (Endo Function (List a))) s t a b =>
+  Proxy sym -> s -> Array a
 toArrayOfB = toArrayOf <<< barlow
