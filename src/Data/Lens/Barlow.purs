@@ -1,6 +1,6 @@
 module Data.Lens.Barlow where
 
-import Data.Lens (Optic', Optic)
+import Data.Lens (Optic)
 import Data.Lens.Barlow.Construction (class ConstructBarlow, constructBarlow)
 import Data.Lens.Barlow.Parser (class ParseSymbol)
 import Type.Proxy (Proxy(..))
@@ -18,11 +18,11 @@ class Barlow (string :: Symbol) p s t a b | string -> s t a b where
   barlow :: Proxy string -> Optic p s t a b
 
 instance barlowInstance ::
-  ( ParseSymbol string attributes
-  , ConstructBarlow attributes p s t a b
+  ( ParseSymbol string lenstypes
+  , ConstructBarlow lenstypes p s t a b
   ) =>
   Barlow string p s t a b where
-  barlow _ = constructBarlow (Proxy :: Proxy attributes)
+  barlow _ = constructBarlow (Proxy :: Proxy lenstypes)
 
 -- | Just an alias for `Proxy` to make selection a bit nicer
 key :: forall k. Proxy k

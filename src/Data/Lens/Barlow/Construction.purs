@@ -65,25 +65,25 @@ else instance cbgNilPercentageOneArgumentConstructor ::
     a a where
   constructBarlowGeneric _ = _Constructor <<< _Argument
 else instance cbgConsPercentageOneArgumentConstructor ::
-  ( ConstructBarlow rest p restX restX a a
+  ( ConstructBarlow rest p restA restA a a
   , Profunctor p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
     p
-    (Constructor sym (Argument restX))
-    (Constructor sym (Argument restX))
+    (Constructor sym (Argument restA))
+    (Constructor sym (Argument restA))
     a a where
   constructBarlowGeneric _ = _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 else instance cbgConsPercentageMultiArgumentConstructor ::
-  ( ConstructBarlowGeneric rest p restX restX a a
+  ( ConstructBarlowGeneric rest p restA restA a a
   , Profunctor p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
     p
-    (Constructor sym restX)
-    (Constructor sym restX)
+    (Constructor sym restA)
+    (Constructor sym restA)
     a a where
   constructBarlowGeneric _ = _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
 --------- PERCENTAGE LEFT SUM -----------------------
@@ -109,25 +109,25 @@ else instance cbgNilPercentageOneArgumentLeftSum ::
     a a where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _Argument
 else instance cbgConsPercentageOneArgumentLeftSum ::
-  ( ConstructBarlow rest p restX restX a a
+  ( ConstructBarlow rest p restA restA a a
   , Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
     p
-    (Sum (Constructor sym (Argument restX)) r)
-    (Sum (Constructor sym (Argument restX)) r)
+    (Sum (Constructor sym (Argument restA)) r)
+    (Sum (Constructor sym (Argument restA)) r)
     a a where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 else instance cbgConsPercentageMultiArgumentLeftSum ::
-  ( ConstructBarlowGeneric rest p restX restX a a
+  ( ConstructBarlowGeneric rest p restA restA a a
   , Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
     p
-    (Sum (Constructor sym restX) r)
-    (Sum (Constructor sym restX) r)
+    (Sum (Constructor sym restA) r)
+    (Sum (Constructor sym restA) r)
     a a where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
 --------- PERCENTAGE RIGHT SUM -----------------------
@@ -153,25 +153,25 @@ else instance cbgNilPercentageOneArgumentRightSum ::
     a a where
   constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _Argument
 else instance cbgConsRightPercentageOneSum ::
-  ( ConstructBarlow rest p restX restX a a
+  ( ConstructBarlow rest p restA restA a a
   , Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
     p
-    (Sum l (Constructor sym (Argument restX)))
-    (Sum l (Constructor sym (Argument restX)))
+    (Sum l (Constructor sym (Argument restA)))
+    (Sum l (Constructor sym (Argument restA)))
     a a where
   constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 else instance cbgConsRightPercentageManySum ::
-  ( ConstructBarlowGeneric (TCons (Percentage sym) rest) p restX restX a a
+  ( ConstructBarlowGeneric (TCons (Percentage sym) rest) p restA restA a a
   , Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) rest)
     p
-    (Sum l restX)
-    (Sum l restX)
+    (Sum l restA)
+    (Sum l restA)
     a a where
   constructBarlowGeneric _ = _SumRight <<< constructBarlowGeneric (Proxy :: Proxy (TCons (Percentage sym) rest))
 --------- PERCENTAGE LEFT PRODUCT -----------------------
@@ -186,14 +186,14 @@ else instance cbgNilPercentageOneArgumentLeftProduct ::
     a a where
   constructBarlowGeneric _ = _ProductLeft <<< _Argument
 else instance cbgConsPercentageOneArgumentLeftProduct ::
-  ( ConstructBarlow rest p restX restX a a
+  ( ConstructBarlow rest p restA restA a a
   , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage N1) rest)
     p
-    (Product (Argument restX) r)
-    (Product (Argument restX) r)
+    (Product (Argument restA) r)
+    (Product (Argument restA) r)
     a a where
   constructBarlowGeneric _ = _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 --------- PERCENTAGE RIGHT PRODUCT -----------------------
@@ -208,25 +208,25 @@ else instance cbgNilPercentageOneArgumentRightProduct ::
     a a where
   constructBarlowGeneric _ = _Argument
 else instance cbgConsPercentageOneArgumentRightProduct ::
-  ( ConstructBarlow rest p restX restX a a
+  ( ConstructBarlow rest p restA restA a a
   , Profunctor p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage N1) rest)
     p
-    (Argument restX)
-    (Argument restX)
+    (Argument restA)
+    (Argument restA)
     a a where
   constructBarlowGeneric _ = _Argument <<< constructBarlow (Proxy :: Proxy rest)
 else instance cbgPercentageRightProduct ::
-  ( ConstructBarlowGeneric (TCons (Percentage k) rest) p restX restX a a
+  ( ConstructBarlowGeneric (TCons (Percentage k) rest) p restA restA a a
   , Strong p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage (S k)) rest)
     p
-    (Product l restX)
-    (Product l restX)
+    (Product l restA)
+    (Product l restA)
     a a where
   constructBarlowGeneric _ = _ProductRight <<< constructBarlowGeneric (Proxy :: Proxy (TCons (Percentage k) rest))
 
@@ -277,57 +277,57 @@ else instance constructBarlowNil ::
   constructBarlow _ = prop (Proxy :: Proxy sym)
 -- Cons instance for question mark
 else instance constructBarlowConsQuestionMark ::
-  ( ConstructBarlow rest p restX restY a b
+  ( ConstructBarlow rest p restA restB a b
   , Choice p
   ) =>
   ConstructBarlow
     (TCons QuestionMark rest)
     p
-    (Maybe restX)
-    (Maybe restY)
+    (Maybe restA)
+    (Maybe restB)
     a b where
   constructBarlow _ = _Just <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for right arrow
 else instance constructBarlowConsRightArrow ::
-  ( ConstructBarlow rest p restX restY a b
+  ( ConstructBarlow rest p restA restB a b
   , Choice p
   ) =>
   ConstructBarlow
     (TCons RightArrow rest)
     p
-    (Either l restX)
-    (Either l restY)
+    (Either l restA)
+    (Either l restB)
     a b where
   constructBarlow _ = _Right <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for left arrow
 else instance constructBarlowConsLeftArrow ::
-  ( ConstructBarlow rest p restX restY a b
+  ( ConstructBarlow rest p restA restB a b
   , Choice p
   ) =>
   ConstructBarlow
     (TCons LeftArrow rest)
     p
-    (Either restX r)
-    (Either restY r)
+    (Either restA r)
+    (Either restB r)
     a b where
   constructBarlow _ = _Left <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for plus
 else instance constructBarlowConsPlus ::
-  ( ConstructBarlow rest p restX restY a b
+  ( ConstructBarlow rest p restA restB a b
   , Wander p
   , Traversable t
   ) =>
   ConstructBarlow
     (TCons Plus rest)
     p
-    (t restX)
-    (t restY)
+    (t restA)
+    (t restB)
     a b where
   constructBarlow _ = traversed <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for Newtype
 else instance constructBarlowConsExclamationMark ::
-  ( ConstructBarlow rest p restX restX a a
-  , Newtype nt restX
+  ( ConstructBarlow rest p restA restA a a
+  , Newtype nt restA
   , Profunctor p
   ) =>
   ConstructBarlow
@@ -340,9 +340,9 @@ else instance constructBarlowConsExclamationMark ::
 -- Cons instance for record selector
 else instance constructBarlowCons ::
   ( IsSymbol sym
-  , ConstructBarlow rest p restX restY a b
-  , Row.Cons sym restX thru rx
-  , Row.Cons sym restY thru ry
+  , ConstructBarlow rest p restA restB a b
+  , Row.Cons sym restA thru rx
+  , Row.Cons sym restB thru ry
   , Strong p
   ) =>
   ConstructBarlow (TCons (RecordField sym) rest) p { | rx } { | ry } a b where
