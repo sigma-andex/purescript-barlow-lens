@@ -310,7 +310,6 @@ spec =
         actual `shouldEqual` expected
       it "should view into a record with Newtype" do
         let
-          sky :: { zodiac :: Maybe { virgo :: AlphaR }}
           sky =
             { zodiac:
                 Just
