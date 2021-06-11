@@ -59,7 +59,7 @@ spec =
 
           actual = over (barlow (key :: _ "zodiac.sagittarius+.id")) show sky
         actual `shouldEqual` expected
-      it "should modify a record with changed types" do
+      it "should modify a record with changed types (2)" do
         let
           sky :: { zodiac :: Either { sagittarius :: Maybe { rukbat :: Either String { id :: Int } } } Boolean }
           sky =
@@ -73,4 +73,14 @@ spec =
             }
 
           actual = over (barlow (key :: _ "zodiac<.sagittarius?.rukbat>.id")) (show >>> (_ <> " !!!")) sky
+        actual `shouldEqual` expected
+      it "should modify a record with changed types (3)" do
+        let
+          sky :: { zodiac :: { sagittarius :: { alpha :: String } } }
+          sky = { zodiac: { sagittarius: { alpha: "Rukbat" } } }
+
+          expected :: { zodiac :: { sagittarius :: { first :: String } } }
+          expected = { zodiac: { sagittarius: { first: "Rukbat" } } }
+
+          actual = over (barlow (key :: _ "zodiac.sagittarius")) (\{ alpha } -> { first: alpha }) sky
         actual `shouldEqual` expected

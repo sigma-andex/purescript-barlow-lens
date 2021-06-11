@@ -52,7 +52,7 @@ spec =
                 }
             }
         overB (key :: _ "zodiac.sagittarius.nebula+") (_ <> " nebula") sky `shouldEqual` expected
-      it "should toArrayOfB into a record" do
+      it "should toArrayOfB into a record (2)" do
         let
           sky =
             { zodiac:
