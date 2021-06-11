@@ -18,11 +18,11 @@ class Barlow (string :: Symbol) p s t a b | string -> s t a b where
   barlow :: Proxy string -> Optic p s t a b
 
 instance barlowInstance ::
-  ( ParseSymbol string lenstypes
-  , ConstructBarlow lenstypes p s t a b
+  ( ParseSymbol string lenses
+  , ConstructBarlow lenses p s t a b
   ) =>
   Barlow string p s t a b where
-  barlow _ = constructBarlow (Proxy :: Proxy lenstypes)
+  barlow _ = constructBarlow (Proxy :: Proxy lenses)
 
 -- | Just an alias for `Proxy` to make selection a bit nicer
 key :: forall k. Proxy k
