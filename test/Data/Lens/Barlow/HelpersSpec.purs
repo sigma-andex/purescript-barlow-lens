@@ -1,7 +1,6 @@
 module Data.Lens.Barlow.HelpersSpec where
 
 import Prelude
-
 import Data.Either (Either(..))
 import Data.Lens.Barlow (key)
 import Data.Lens.Barlow.Helpers (overB, previewB, toArrayOfB, viewB)
@@ -27,10 +26,12 @@ spec =
         let
           sky =
             { zodiac:
-                Left { sagittarius:
-                    Just { alpha: Right "Rukbat"
-                    }
-                }
+                Left
+                  { sagittarius:
+                      Just
+                        { alpha: Right "Rukbat"
+                        }
+                  }
             }
         previewB (key :: _ "zodiac<.sagittarius?.alpha>") sky `shouldEqual` (Just "Rukbat")
       it "should toArrayOfB into a record" do
@@ -38,7 +39,7 @@ spec =
           sky =
             { zodiac:
                 { sagittarius:
-                    { nebula: ["Lagoon", "Omega", "Trifid", "Red Spider", "NGC 6559"]
+                    { nebula: [ "Lagoon", "Omega", "Trifid", "Red Spider", "NGC 6559" ]
                     }
                 }
             }
@@ -46,7 +47,7 @@ spec =
           expected =
             { zodiac:
                 { sagittarius:
-                    { nebula: ["Lagoon nebula", "Omega nebula", "Trifid nebula", "Red Spider nebula", "NGC 6559 nebula"]
+                    { nebula: [ "Lagoon nebula", "Omega nebula", "Trifid nebula", "Red Spider nebula", "NGC 6559 nebula" ]
                     }
                 }
             }
@@ -55,9 +56,10 @@ spec =
         let
           sky =
             { zodiac:
-                { sagittarius:
-                    { nebula: ["Lagoon", "Omega", "Trifid", "Red Spider", "NGC 6559"]
-                    }
-                }
+                [ { name: "sagittarius", nebula: [ "Lagoon", "Omega", "Trifid", "Red Spider", "NGC 6559" ] }
+                , { name: "scorpius", nebula: [ "Bug", "Cat" ] }
+                ]
             }
-        toArrayOfB (key :: _ "zodiac.sagittarius.nebula+") sky `shouldEqual` ["Lagoon", "Omega", "Trifid", "Red Spider", "NGC 6559"]
+
+          expected = [ "Lagoon", "Omega", "Trifid", "Red Spider", "NGC 6559", "Bug", "Cat" ]
+        toArrayOfB (key :: _ "zodiac+.nebula+") sky `shouldEqual` expected
