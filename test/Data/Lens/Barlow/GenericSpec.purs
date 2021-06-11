@@ -1,4 +1,4 @@
-module Data.Lens.BarloGenericSpec where
+module Data.Lens.Barlow.GenericSpec where
 
 import Data.Generic.Rep (class Generic)
 import Data.Lens (over, preview, view)

@@ -1,4 +1,4 @@
-module Data.Lens.BarloGenericSimpleSpec where
+module Data.Lens.Barlow.GenericSimpleSpec where
 
 import Data.Eq (class Eq)
 import Data.Generic.Rep (class Generic)

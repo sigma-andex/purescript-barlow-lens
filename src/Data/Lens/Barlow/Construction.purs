@@ -44,7 +44,7 @@ These are examples of generic representations. Keeping them here for reference.
 (Inr (Inr (Constructor @"C10" (Product (Argument "uno") (Product (Argument "dos") (Argument "tres"))))))
 -}
 --------- PERCENTAGE SINGLETON CONSTRUCTOR -----------
-instance cbgNilPercentageZeroArgumentConstructor ::
+instance 
   ( Strong p
     ) =>
   ConstructBarlowGeneric
