@@ -1,7 +1,6 @@
 module Data.Lens.Barlow.Helpers where
 
 import Prelude
-
 import Data.Lens (Forget, over, preview, toArrayOf, view)
 import Data.Lens.Barlow (barlow)
 import Data.Lens.Barlow.Construction (class ConstructBarlow)
@@ -33,5 +32,9 @@ overB ::
   Proxy sym -> (inner -> inner) -> input -> input
 overB = over <<< barlow
 
-toArrayOfB :: forall input output sym attribs. ParseSymbol sym attribs => ConstructBarlow attribs (Forget (Endo Function (List output))) input output => Proxy sym -> input -> Array output
+toArrayOfB ::
+  forall input output sym attribs.
+  ParseSymbol sym attribs =>
+  ConstructBarlow attribs (Forget (Endo Function (List output))) input output =>
+  Proxy sym -> input -> Array output
 toArrayOfB = toArrayOf <<< barlow
