@@ -2,7 +2,7 @@ module Data.Lens.Barlow.Construction where
 
 import Data.Either (Either)
 import Data.Generic.Rep (class Generic, Argument, Constructor, NoArguments, Product, Sum)
-import Data.Lens (class Wander, Optic', Optic, _Just, _Left, _Right, traversed)
+import Data.Lens (class Wander, Optic, _Just, _Left, _Right, traversed)
 import Data.Lens.Barlow.Generic (_Argument, _Constructor, _NoArguments, _ProductLeft, _ProductRight, _SumLeft, _SumRight, _ToGeneric)
 import Data.Lens.Barlow.Types (ExclamationMark, LeftArrow, N1, Percentage, Plus, QuestionMark, RecordField, RightArrow, S, TCons, TList, TNil)
 import Data.Lens.Iso.Newtype (_Newtype)
