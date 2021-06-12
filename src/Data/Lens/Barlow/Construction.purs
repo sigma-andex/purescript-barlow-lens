@@ -20,8 +20,8 @@ import Type.Proxy (Proxy(..))
 
 -- Type class for barlow lens construction of generic representations. 
 -- This type class is never instantiated immediately, but rather if ConstructBarlow fails.
-class ConstructBarlowGeneric (attributes :: TList) p s t a b | attributes s -> t a b where
-  constructBarlowGeneric :: Proxy attributes -> Optic p s t a b
+class ConstructBarlowGeneric (lenses :: TList) p s t a b | lenses s -> t a b where
+  constructBarlowGeneric :: Proxy lenses -> Optic p s t a b
 
 {-
 These are examples of generic representations. Keeping them here for reference.
@@ -54,8 +54,7 @@ instance
     (Constructor sym NoArguments)
     Unit Unit where
   constructBarlowGeneric _ = _Constructor <<< _NoArguments
-else instance cbgNilPercentageOneArgumentConstructor ::
-  ( Profunctor p
+else instance ( Profunctor p
     ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -64,8 +63,7 @@ else instance cbgNilPercentageOneArgumentConstructor ::
     (Constructor sym (Argument a))
     a a where
   constructBarlowGeneric _ = _Constructor <<< _Argument
-else instance cbgConsPercentageOneArgumentConstructor ::
-  ( ConstructBarlow rest p restA restA a a
+else instance ( ConstructBarlow rest p restA restA a a
   , Profunctor p
   ) =>
   ConstructBarlowGeneric
@@ -75,8 +73,7 @@ else instance cbgConsPercentageOneArgumentConstructor ::
     (Constructor sym (Argument restA))
     a a where
   constructBarlowGeneric _ = _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
-else instance cbgConsPercentageMultiArgumentConstructor ::
-  ( ConstructBarlowGeneric rest p restA restA a a
+else instance ( ConstructBarlowGeneric rest p restA restA a a
   , Profunctor p
   ) =>
   ConstructBarlowGeneric
@@ -87,8 +84,7 @@ else instance cbgConsPercentageMultiArgumentConstructor ::
     a a where
   constructBarlowGeneric _ = _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
 --------- PERCENTAGE LEFT SUM -----------------------
-else instance cbgNilPercentageZeroArgumentLeftSum ::
-  ( Choice p
+else instance ( Choice p
   , Strong p
   ) =>
   ConstructBarlowGeneric
@@ -98,8 +94,7 @@ else instance cbgNilPercentageZeroArgumentLeftSum ::
     (Sum (Constructor sym NoArguments) r)
     Unit Unit where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _NoArguments
-else instance cbgNilPercentageOneArgumentLeftSum ::
-  ( Choice p
+else instance ( Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -108,8 +103,7 @@ else instance cbgNilPercentageOneArgumentLeftSum ::
     (Sum (Constructor sym (Argument a)) r)
     a a where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _Argument
-else instance cbgConsPercentageOneArgumentLeftSum ::
-  ( ConstructBarlow rest p restA restA a a
+else instance ( ConstructBarlow rest p restA restA a a
   , Choice p
   ) =>
   ConstructBarlowGeneric
@@ -119,8 +113,7 @@ else instance cbgConsPercentageOneArgumentLeftSum ::
     (Sum (Constructor sym (Argument restA)) r)
     a a where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
-else instance cbgConsPercentageMultiArgumentLeftSum ::
-  ( ConstructBarlowGeneric rest p restA restA a a
+else instance ( ConstructBarlowGeneric rest p restA restA a a
   , Choice p
   ) =>
   ConstructBarlowGeneric
@@ -131,8 +124,7 @@ else instance cbgConsPercentageMultiArgumentLeftSum ::
     a a where
   constructBarlowGeneric _ = _SumLeft <<< _Constructor <<< constructBarlowGeneric (Proxy :: Proxy rest)
 --------- PERCENTAGE RIGHT SUM -----------------------
-else instance cbgNilPercentageZeroArgumentRightSum ::
-  ( Choice p
+else instance ( Choice p
   , Strong p
   ) =>
   ConstructBarlowGeneric
@@ -142,8 +134,7 @@ else instance cbgNilPercentageZeroArgumentRightSum ::
     (Sum l (Constructor sym NoArguments))
     Unit Unit where
   constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _NoArguments
-else instance cbgNilPercentageOneArgumentRightSum ::
-  ( Choice p
+else instance ( Choice p
   ) =>
   ConstructBarlowGeneric
     (TCons (Percentage sym) TNil)
@@ -152,8 +143,7 @@ else instance cbgNilPercentageOneArgumentRightSum ::
     (Sum l (Constructor sym (Argument a)))
     a a where
   constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _Argument
-else instance cbgConsRightPercentageOneSum ::
-  ( ConstructBarlow rest p restA restA a a
+else instance ( ConstructBarlow rest p restA restA a a
   , Choice p
   ) =>
   ConstructBarlowGeneric
@@ -163,8 +153,7 @@ else instance cbgConsRightPercentageOneSum ::
     (Sum l (Constructor sym (Argument restA)))
     a a where
   constructBarlowGeneric _ = _SumRight <<< _Constructor <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
-else instance cbgConsRightPercentageManySum ::
-  ( ConstructBarlowGeneric (TCons (Percentage sym) rest) p restA restA a a
+else instance ( ConstructBarlowGeneric (TCons (Percentage sym) rest) p restA restA a a
   , Choice p
   ) =>
   ConstructBarlowGeneric
@@ -175,8 +164,7 @@ else instance cbgConsRightPercentageManySum ::
     a a where
   constructBarlowGeneric _ = _SumRight <<< constructBarlowGeneric (Proxy :: Proxy (TCons (Percentage sym) rest))
 --------- PERCENTAGE LEFT PRODUCT -----------------------
-else instance cbgNilPercentageOneArgumentLeftProduct ::
-  ( Strong p
+else instance ( Strong p
     ) =>
   ConstructBarlowGeneric
     (TCons (Percentage N1) TNil)
@@ -185,8 +173,7 @@ else instance cbgNilPercentageOneArgumentLeftProduct ::
     (Product (Argument a) r)
     a a where
   constructBarlowGeneric _ = _ProductLeft <<< _Argument
-else instance cbgConsPercentageOneArgumentLeftProduct ::
-  ( ConstructBarlow rest p restA restA a a
+else instance ( ConstructBarlow rest p restA restA a a
   , Strong p
   ) =>
   ConstructBarlowGeneric
@@ -197,8 +184,7 @@ else instance cbgConsPercentageOneArgumentLeftProduct ::
     a a where
   constructBarlowGeneric _ = _ProductLeft <<< _Argument <<< constructBarlow (Proxy :: Proxy rest)
 --------- PERCENTAGE RIGHT PRODUCT -----------------------
-else instance cbgNilPercentageOneArgumentRightProduct ::
-  ( Profunctor p
+else instance ( Profunctor p
     ) =>
   ConstructBarlowGeneric
     (TCons (Percentage N1) TNil)
@@ -207,8 +193,7 @@ else instance cbgNilPercentageOneArgumentRightProduct ::
     (Argument a)
     a a where
   constructBarlowGeneric _ = _Argument
-else instance cbgConsPercentageOneArgumentRightProduct ::
-  ( ConstructBarlow rest p restA restA a a
+else instance ( ConstructBarlow rest p restA restA a a
   , Profunctor p
   ) =>
   ConstructBarlowGeneric
@@ -218,8 +203,7 @@ else instance cbgConsPercentageOneArgumentRightProduct ::
     (Argument restA)
     a a where
   constructBarlowGeneric _ = _Argument <<< constructBarlow (Proxy :: Proxy rest)
-else instance cbgPercentageRightProduct ::
-  ( ConstructBarlowGeneric (TCons (Percentage k) rest) p restA restA a a
+else instance ( ConstructBarlowGeneric (TCons (Percentage k) rest) p restA restA a a
   , Strong p
   ) =>
   ConstructBarlowGeneric
@@ -231,30 +215,26 @@ else instance cbgPercentageRightProduct ::
   constructBarlowGeneric _ = _ProductRight <<< constructBarlowGeneric (Proxy :: Proxy (TCons (Percentage k) rest))
 
 -- Typeclass for constructing a barlow lenses from a typelevel list and an input type.
-class ConstructBarlow (attributes :: TList) p s t a b | attributes s -> t a b where
-  constructBarlow :: Proxy attributes -> Optic p s t a b
+class ConstructBarlow (lenses :: TList) p s t a b | lenses s -> t a b where
+  constructBarlow :: Proxy lenses -> Optic p s t a b
 
 -- Nil instance for question mark 
-instance constructBarlowNilQuestionMark ::
-  ( Choice p
+instance ( Choice p
     ) =>
   ConstructBarlow (TCons QuestionMark TNil) p (Maybe a) (Maybe b) a b where
   constructBarlow _ = _Just
 -- Nil instance for right arrow
-else instance constructBarlowNilRightArrow ::
-  ( Choice p
+else instance ( Choice p
     ) =>
   ConstructBarlow (TCons RightArrow TNil) p (Either l a) (Either l b) a b where
   constructBarlow _ = _Right
 -- Nil instance for left arrow
-else instance constructBarlowNilLeftArrow ::
-  ( Choice p
+else instance ( Choice p
     ) =>
   ConstructBarlow (TCons LeftArrow TNil) p (Either a r) (Either b r) a b where
   constructBarlow _ = _Left
 -- Nil instance for plus
-else instance constructBarlowNilPlus ::
-  ( Wander p
+else instance ( Wander p
   , Traversable t
   ) =>
   ConstructBarlow (TCons Plus TNil) p (t a) (t b) a b where
@@ -267,8 +247,7 @@ else instance constructBarlowNilExclamationMark ::
   ConstructBarlow (TCons ExclamationMark TNil) p nt nt a a where
   constructBarlow _ = _Newtype
 -- Nil instance for record selector
-else instance constructBarlowNil ::
-  ( IsSymbol sym
+else instance ( IsSymbol sym
   , Row.Cons sym a rc x
   , Row.Cons sym b rc y
   , Strong p
@@ -276,8 +255,7 @@ else instance constructBarlowNil ::
   ConstructBarlow (TCons (RecordField sym) TNil) p (Record x) (Record y) a b where
   constructBarlow _ = prop (Proxy :: Proxy sym)
 -- Cons instance for question mark
-else instance constructBarlowConsQuestionMark ::
-  ( ConstructBarlow rest p restA restB a b
+else instance ( ConstructBarlow rest p restA restB a b
   , Choice p
   ) =>
   ConstructBarlow
@@ -288,8 +266,7 @@ else instance constructBarlowConsQuestionMark ::
     a b where
   constructBarlow _ = _Just <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for right arrow
-else instance constructBarlowConsRightArrow ::
-  ( ConstructBarlow rest p restA restB a b
+else instance ( ConstructBarlow rest p restA restB a b
   , Choice p
   ) =>
   ConstructBarlow
@@ -300,8 +277,7 @@ else instance constructBarlowConsRightArrow ::
     a b where
   constructBarlow _ = _Right <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for left arrow
-else instance constructBarlowConsLeftArrow ::
-  ( ConstructBarlow rest p restA restB a b
+else instance ( ConstructBarlow rest p restA restB a b
   , Choice p
   ) =>
   ConstructBarlow
@@ -312,8 +288,7 @@ else instance constructBarlowConsLeftArrow ::
     a b where
   constructBarlow _ = _Left <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for plus
-else instance constructBarlowConsPlus ::
-  ( ConstructBarlow rest p restA restB a b
+else instance ( ConstructBarlow rest p restA restB a b
   , Wander p
   , Traversable t
   ) =>
@@ -325,8 +300,7 @@ else instance constructBarlowConsPlus ::
     a b where
   constructBarlow _ = traversed <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for Newtype
-else instance constructBarlowConsExclamationMark ::
-  ( ConstructBarlow rest p restA restA a a
+else instance ( ConstructBarlow rest p restA restA a a
   , Newtype nt restA
   , Profunctor p
   ) =>
@@ -338,8 +312,7 @@ else instance constructBarlowConsExclamationMark ::
     a a where
   constructBarlow _ = _Newtype <<< constructBarlow (Proxy :: Proxy rest)
 -- Cons instance for record selector
-else instance constructBarlowCons ::
-  ( IsSymbol sym
+else instance ( IsSymbol sym
   , ConstructBarlow rest p restA restB a b
   , Row.Cons sym restA thru rx
   , Row.Cons sym restB thru ry
@@ -348,8 +321,7 @@ else instance constructBarlowCons ::
   ConstructBarlow (TCons (RecordField sym) rest) p { | rx } { | ry } a b where
   constructBarlow _ = prop (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
 -- Instance for generic
-else instance constructBarlowConsNilGeneric ::
-  ( Generic s repS
+else instance ( Generic s repS
   , ConstructBarlowGeneric tlist p repS repS a a
   , Profunctor p
   ) =>
