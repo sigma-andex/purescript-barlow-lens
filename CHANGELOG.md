@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.0
+- Move from `Optic'` to `Optic` to allow changing types when modifying a value.
+- Add helpers to further simplify lens construction
+- Add some more interesting test cases
+- Refactoring tests
+
 ## v0.7.2
 - Bugfix: Remove unnecessary constraints resulting in type errors when explicitely adding the type annotations.
 

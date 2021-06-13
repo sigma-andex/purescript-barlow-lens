@@ -13,25 +13,34 @@ spago install barlow-lens
 ## tl;dr 
 
 ```purescript
+import Data.Lens 
 import Data.Lens.Barlow
-import Data.Lens.Barlow.Helpers
 import Data.String (toUpper)
 
-sky =
-  { zodiac:
-      { virgo:
-          { alpha: "Spica"
-          }
-      }
-  }
+sky = { zodiac: { virgo: { alpha: "Spica" } } }
 
-spica = view (key :: _ "zodiac.virgo.alpha") sky
+spica = view (barlow (key :: _ "zodiac.virgo.alpha")) sky
 -- "Spica"
-skyUpper = over (key :: _ "zodiac.virgo.alpha") toUpper sky
+upped = over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
 -- { zodiac: { virgo: { alpha: "SPICA" } } }
     
 -- alfa = view (key :: _ "zodiac.virgo.alfa") sky 
 -- doesn't compile
+```
+
+or use the barlow helpers to make it even shorter:
+
+```purescript
+import Data.Lens.Barlow
+import Data.Lens.Barlow.Helpers
+import Data.String (toUpper)
+
+sky = { zodiac: { virgo: { alpha: "Spica" } } }
+
+spica = view (key :: _ "zodiac.virgo.alpha") sky
+-- "Spica"
+upped = over (key :: _ "zodiac.virgo.alpha") toUpper sky
+-- { zodiac: { virgo: { alpha: "SPICA" } } }
 ```
 
 ### Features 
