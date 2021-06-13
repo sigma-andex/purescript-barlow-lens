@@ -18,6 +18,7 @@
         "purescript-effect": "^v3.0.0",
         "purescript-either": "^v5.0.0",
         "purescript-foldable-traversable": "^v5.0.0",
+        "purescript-lists": "^v6.0.0",
         "purescript-maybe": "^v5.0.0",
         "purescript-newtype": "^v4.0.0",
         "purescript-prelude": "^v5.0.0",
