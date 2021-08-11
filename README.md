@@ -58,6 +58,7 @@ Barlow supports lens creation for the following types:
 Use `?` to zoom into a `Maybe`.
 
 ```purescript 
+import Data.Maybe (Maybe(..))
 import Data.Lens.Barlow
 import Data.Lens.Barlow.Helpers
 
@@ -78,8 +79,11 @@ spica = preview (key :: _ "zodiac?.virgo?.alpha?") sky
 Use `<` for `Left` and `>` for `Right` to zoom into an `Either`.
 
 ```purescript 
+import Data.Either (Either(..))
+import Data.Maybe (Maybe(..))
 import Data.Lens.Barlow
 import Data.Lens.Barlow.Helpers
+import Data.String (toUpper)
 
 sky =
   { zodiac:
@@ -99,8 +103,10 @@ spica = preview (key :: _ "zodiac>.virgo?.alpha<") sky
 Use `+` to zoom into `Traversable`s like `Array`.
 
 ```purescript 
+import Data.Maybe (Maybe(..))
 import Data.Lens.Barlow
 import Data.Lens.Barlow.Helpers
+import Data.String (toUpper)
 
 sky =
   { zodiac:
@@ -126,9 +132,11 @@ Use `!` to zoom into a `Newtype`.
 ```purescript
 import Data.Lens.Barlow
 import Data.Lens.Barlow.Helpers
+import Data.Maybe (Maybe(..))
+import Data.Newtype (class Newtype)
 
 newtype Alpha = Alpha { alpha :: String }
-instance alphaNT :: Newtype Alpha { alpha :: String }
+instance Newtype Alpha { alpha :: String }
 
 sky =
   { zodiac:
@@ -155,16 +163,19 @@ It is more readable if you separate your sum lens from your product lens with a 
 ```purescript 
 import Data.Lens.Barlow
 import Data.Lens.Barlow.Helpers
+import Data.Generic.Rep (class Generic)
+import Data.Show.Generic (genericShow)
+import Data.String.Common (toUpper)
 
 data Zodiac
   = Carina { alpha :: String } 
   | Virgo { alpha :: String } { beta :: String } { gamma :: String } { delta :: String } 
   | CanisMaior String 
 
-derive instance genericZodiac :: Generic Zodiac _
+derive instance Generic Zodiac _
 
 -- Optionally derive a show instance
-instance showZodiac :: Show Zodiac where
+instance Show Zodiac where
   show = genericShow
 
 sky =
