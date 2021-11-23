@@ -7,41 +7,31 @@ foreign import data TNil :: TList
 
 foreign import data TCons :: forall k. k -> TList -> TList
 
-data Nat 
+data Nat
 
-foreign import data Z :: Nat 
+foreign import data Z :: Nat
 
-foreign import data S :: Nat -> Nat 
+foreign import data S :: Nat -> Nat
 
-type N0
-  = Z
+type N0 = Z
 
-type N1
-  = S N0
+type N1 = S N0
 
-type N2
-  = S N1
+type N2 = S N1
 
-type N3
-  = S N2
+type N3 = S N2
 
-type N4
-  = S N3
+type N4 = S N3
 
-type N5
-  = S N4
+type N5 = S N4
 
-type N6
-  = S N5
+type N6 = S N5
 
-type N7
-  = S N6
+type N7 = S N6
 
-type N8
-  = S N7
+type N8 = S N7
 
-type N9
-  = S N8
+type N9 = S N8
 
 -- ADT representing the different types of lenses at the type level
 data LensType

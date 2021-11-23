@@ -58,27 +58,27 @@ else instance parserecordfieldCons ::
 instance parse1Nil :: Parse1Symbol a "" (TCons (RecordField a) TNil)
 else instance parse1Dot ::
   ( ParseSymbol s rest
-    ) =>
+  ) =>
   Parse1Symbol "." s rest
 else instance parse1QuestionMark ::
   ( ParseSymbol s rest
-    ) =>
+  ) =>
   Parse1Symbol "?" s (TCons QuestionMark rest)
 else instance parse1RightArrow ::
   ( ParseSymbol s rest
-    ) =>
+  ) =>
   Parse1Symbol ">" s (TCons RightArrow rest)
 else instance parse1LeftArrow ::
   ( ParseSymbol s rest
-    ) =>
+  ) =>
   Parse1Symbol "<" s (TCons LeftArrow rest)
 else instance parse1Plus ::
   ( ParseSymbol s rest
-    ) =>
+  ) =>
   Parse1Symbol "+" s (TCons Plus rest)
 else instance parse1ExclamationMark ::
   ( ParseSymbol s rest
-    ) =>
+  ) =>
   Parse1Symbol "!" s (TCons ExclamationMark rest)
 else instance parse1Percentage ::
   ( Symbol.Cons th tt t
