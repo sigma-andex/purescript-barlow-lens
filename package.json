@@ -13,5 +13,6 @@
     "purescript": "^0.14.5",
     "purs-tidy": "^0.6.3",
     "spago": "^0.20.3"
-  }
+  },
+  "type": "module"
 }
