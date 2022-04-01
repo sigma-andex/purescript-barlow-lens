@@ -10,7 +10,6 @@
   , "prelude"
   , "profunctor"
   , "profunctor-lenses"
-  , "psci-support"
   , "spec"
   , "spec-discovery"
   , "strings"
