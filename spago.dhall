@@ -1,8 +1,6 @@
 { name = "barlow-lens"
 , dependencies =
-  [ "aff"
-  , "effect"
-  , "either"
+  [ "either"
   , "foldable-traversable"
   , "lists"
   , "maybe"
@@ -10,14 +8,11 @@
   , "prelude"
   , "profunctor"
   , "profunctor-lenses"
-  , "spec"
-  , "spec-discovery"
-  , "strings"
   , "tuples"
   , "typelevel-prelude"
   ]
 , packages = ./packages.dhall
-, sources = [ "src/**/*.purs", "test/**/*.purs" ]
+, sources = [ "src/**/*.purs"]
 , license = "MIT-0"
 , repository = "https://github.com/sigma-andex/purescript-barlow-lens.git"
 }

@@ -13,8 +13,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: purescript-contrib/setup-purescript@main
-        with:
-          purescript: "unstable"
 
       - uses: actions/setup-node@v2
         with:
@@ -36,4 +34,4 @@ jobs:
 
       - run: spago build
 
-      - run: spago test --no-install
+      - run: spago -x test.dhall test
