@@ -2,7 +2,7 @@ module Data.Lens.Barlow.GenericSpec where
 
 import Data.Generic.Rep (class Generic)
 import Data.Lens (over, preview, view)
-import Data.Lens.Barlow (barlow, key)
+import Data.Lens.Barlow (barlow)
 import Data.Maybe (Maybe(..))
 import Data.Show (class Show)
 import Data.Show.Generic (genericShow)
@@ -107,7 +107,7 @@ spec =
             { zodiac: Virgo1
             }
 
-          actual = view (barlow (key :: _ "zodiac.%Virgo1")) sky
+          actual = view (barlow @"zodiac.%Virgo1") sky
         actual `shouldEqual` unit
       it "should view into a constructor with one argument" do
         let
@@ -117,7 +117,7 @@ spec =
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo.%Virgo2.alpha")) sky
+          actual = view (barlow @"zodiac.virgo.%Virgo2.alpha") sky
         actual `shouldEqual` "Spica"
       it "should view into a constructor with multiple arguments using the left most" do
         let
@@ -127,7 +127,7 @@ spec =
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo.%Virgo3.%1.alpha")) sky
+          actual = view (barlow @"zodiac.virgo.%Virgo3.%1.alpha") sky
         actual `shouldEqual` "Spica"
       it "should view into a sum type left case" do
         let
@@ -140,7 +140,7 @@ spec =
                 }
             }
 
-          actual = preview (barlow (key :: _ "zodiac.virgo.%Virgo4.alpha")) sky
+          actual = preview (barlow @"zodiac.virgo.%Virgo4.alpha") sky
         actual `shouldEqual` (Just "Spica")
       it "should view into a sum type right case" do
         let
@@ -153,7 +153,7 @@ spec =
                 }
             }
 
-          actual = preview (barlow (key :: _ "zodiac.virgo.%Carina4.beta")) sky
+          actual = preview (barlow @"zodiac.virgo.%Carina4.beta") sky
         actual `shouldEqual` (Just "β Car")
       it "should view into a sum with product type right case" do
         let
@@ -164,7 +164,7 @@ spec =
                 }
             }
 
-          actual = preview (barlow (key :: _ "zodiac.virgo.%Virgo5.%4.delta")) sky
+          actual = preview (barlow @"zodiac.virgo.%Virgo5.%4.delta") sky
         actual `shouldEqual` (Just "δ Vir")
       it "should view into a sum with product type right case" do
         let
@@ -172,7 +172,7 @@ spec =
             { zodiac: Centaurus6 "Rigil Kentaurus"
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%Centaurus6")) sky
+          actual = preview (barlow @"zodiac.%Centaurus6") sky
         actual `shouldEqual` (Just "Rigil Kentaurus")
       it "should view into a sum " do
         let
@@ -180,7 +180,7 @@ spec =
             { zodiac: CanisMaior7 "Sirius"
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%CanisMaior7")) sky
+          actual = preview (barlow @"zodiac.%CanisMaior7") sky
         actual `shouldEqual` (Just "Sirius")
       it "should view into a product type" do
         let
@@ -191,7 +191,7 @@ spec =
                 }
             }
 
-          actual = preview (barlow (key :: _ "zodiac.virgo.%Virgo8.%4.delta")) sky
+          actual = preview (barlow @"zodiac.virgo.%Virgo8.%4.delta") sky
         actual `shouldEqual` (Just "δ Vir")
       it "should view into a sum with product type right case" do
         let
@@ -200,7 +200,7 @@ spec =
                 Virgo9 { alpha: "Spica" } { beta: "β Vir" } { gamma: "γ Vir B" } { delta: "δ Vir" }
             }
 
-          actual = over (barlow (key :: _ "zodiac.%Virgo9.%4.delta")) toUpper sky
+          actual = over (barlow @"zodiac.%Virgo9.%4.delta") toUpper sky
         actual
           `shouldEqual`
             { zodiac:
