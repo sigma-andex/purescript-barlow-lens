@@ -97,7 +97,7 @@ spec =
             { zodiac: A1
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%A1")) sky
+          actual = preview (barlow @"zodiac.%A1") sky
         actual `shouldEqual` (Just unit)
       it "should view into a single constructor with one final arguments" do
         let
@@ -105,8 +105,8 @@ spec =
             { zodiac: A2 "World"
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%A2")) sky
-          actual2 = over (barlow (key :: _ "zodiac.%A2")) toUpper sky
+          actual = preview (barlow @"zodiac.%A2") sky
+          actual2 = over (barlow @"zodiac.%A2") toUpper sky
         actual `shouldEqual` (Just "World")
         actual2 `shouldEqual` { zodiac: A2 "WORLD"}
       it "should view into a single constructor with one adt argument" do
@@ -115,8 +115,8 @@ spec =
             { zodiac: A3 Red
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%A3")) sky
-          actual2 = set (barlow (key :: _ "zodiac.%A3")) Yellow sky 
+          actual = preview (barlow @"zodiac.%A3") sky
+          actual2 = set (barlow @"zodiac.%A3") Yellow sky 
         actual `shouldEqual` (Just Red) 
         actual2 `shouldEqual` { zodiac: A3 Yellow }
       it "should view into a single constructor with one non-adt argument" do
@@ -125,8 +125,8 @@ spec =
             { zodiac: A11 { name : "John Doe" } 
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%A11.name")) sky
-          actual2 = over (barlow (key :: _ "zodiac.%A11.name")) toLower sky
+          actual = preview (barlow @"zodiac.%A11.name") sky
+          actual2 = over (barlow @"zodiac.%A11.name") toLower sky
         actual `shouldEqual` (Just "John Doe")
         actual2 `shouldEqual` { zodiac: A11 { name : "john doe"}}
       it "should view into a single constructor with a tuple product argument (left && right)" do
@@ -135,10 +135,10 @@ spec =
             { zodiac: A4 "Caramba" 10
             }
 
-          actualLeft = preview (barlow (key :: _ "zodiac.%A4.%1")) sky
-          actualRight = preview (barlow (key :: _ "zodiac.%A4.%2")) sky
-          actualLeft2 = over (barlow (key :: _ "zodiac.%A4.%1")) toUpper sky
-          actualRight2 = over (barlow (key :: _ "zodiac.%A4.%2")) (_ + 1) sky
+          actualLeft = preview (barlow @"zodiac.%A4.%1") sky
+          actualRight = preview (barlow @"zodiac.%A4.%2") sky
+          actualLeft2 = over (barlow @"zodiac.%A4.%1") toUpper sky
+          actualRight2 = over (barlow @"zodiac.%A4.%2") (_ + 1) sky
         actualLeft `shouldEqual` (Just "Caramba")
         actualRight `shouldEqual` (Just 10)
         actualLeft2 `shouldEqual` { zodiac: A4 "CARAMBA" 10}
@@ -150,7 +150,7 @@ spec =
             { zodiac: A5
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%A5")) sky
+          actual = preview (barlow @"zodiac.%A5") sky
         actual `shouldEqual` (Just unit)
 
       it "should view into a sum type with no argument constructors (right)" do
@@ -159,7 +159,7 @@ spec =
             { zodiac: B5
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%B5")) sky
+          actual = preview (barlow @"zodiac.%B5") sky
         actual `shouldEqual` (Just unit)
 
       it "should view into a sum type with one argument constructors (left)" do
@@ -168,8 +168,8 @@ spec =
             { zodiac: A6 "Football"
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%A6")) sky
-          actual2 = over (barlow (key :: _ "zodiac.%A6")) toUpper sky
+          actual = preview (barlow @"zodiac.%A6") sky
+          actual2 = over (barlow @"zodiac.%A6") toUpper sky
         actual `shouldEqual` (Just "Football")
         actual2 `shouldEqual` { zodiac : A6 "FOOTBALL"}
 
@@ -179,7 +179,7 @@ spec =
             { zodiac: B6 12
             }
 
-          actualLeft = preview (barlow (key :: _ "zodiac.%B6")) sky
+          actualLeft = preview (barlow @"zodiac.%B6") sky
         actualLeft `shouldEqual` (Just 12)
 
       it "should view into a multi sum type with multi argument constructors (right)" do
@@ -188,8 +188,8 @@ spec =
             { zodiac: A8 "hello" 13
             }
 
-          actualLeft = preview (barlow (key :: _ "zodiac.%A8.%1")) sky
-          actualRight = preview (barlow (key :: _ "zodiac.%A8.%2")) sky
+          actualLeft = preview (barlow @"zodiac.%A8.%1") sky
+          actualRight = preview (barlow @"zodiac.%A8.%2") sky
         actualLeft `shouldEqual` (Just "hello")
         actualRight `shouldEqual` (Just 13)
 
@@ -199,7 +199,7 @@ spec =
             { zodiac: A10 14
             }
 
-          actualA10 = preview (barlow (key :: _ "zodiac.%A10")) sky
+          actualA10 = preview (barlow @"zodiac.%A10") sky
         actualA10 `shouldEqual` (Just 14)
 
       it "should view into a multi sum type with multi argument constructors (right)" do
@@ -208,11 +208,11 @@ spec =
             { zodiac: B10 Yellow "hello" 15
             }
 
-          actual1 = preview (barlow (key :: _ "zodiac.%B10.%1")) sky
-          actual2 = preview (barlow (key :: _ "zodiac.%B10.%1.%Yellow")) sky
-          actual3 = preview (barlow (key :: _ "zodiac.%B10.%1.%Red")) sky
-          actual4 = preview (barlow (key :: _ "zodiac.%B10.%2")) sky
-          actual5 = preview (barlow (key :: _ "zodiac.%B10.%3")) sky
+          actual1 = preview (barlow @"zodiac.%B10.%1") sky
+          actual2 = preview (barlow @"zodiac.%B10.%1.%Yellow") sky
+          actual3 = preview (barlow @"zodiac.%B10.%1.%Red") sky
+          actual4 = preview (barlow @"zodiac.%B10.%2") sky
+          actual5 = preview (barlow @"zodiac.%B10.%3") sky
         actual1 `shouldEqual` (Just Yellow)
         actual2 `shouldEqual` (Just unit)
         actual3 `shouldEqual` Nothing
@@ -225,12 +225,12 @@ spec =
             { zodiac: C10 "first" "second" "third"
             }
 
-          actual1 = preview (barlow (key :: _ "zodiac.%C10.%1")) sky
-          actual2 = preview (barlow (key :: _ "zodiac.%C10.%2")) sky
-          actual3 = preview (barlow (key :: _ "zodiac.%C10.%3")) sky
-          actual4 = over (barlow (key :: _ "zodiac.%C10.%1")) toUpper sky
-          actual5 = over (barlow (key :: _ "zodiac.%C10.%2")) toUpper sky
-          actual6 = over (barlow (key :: _ "zodiac.%C10.%3")) toUpper sky
+          actual1 = preview (barlow @"zodiac.%C10.%1") sky
+          actual2 = preview (barlow @"zodiac.%C10.%2") sky
+          actual3 = preview (barlow @"zodiac.%C10.%3") sky
+          actual4 = over (barlow @"zodiac.%C10.%1") toUpper sky
+          actual5 = over (barlow @"zodiac.%C10.%2") toUpper sky
+          actual6 = over (barlow @"zodiac.%C10.%3") toUpper sky
         actual1 `shouldEqual` (Just "first")
         actual2 `shouldEqual` (Just "second")
         actual3 `shouldEqual` (Just "third")
@@ -244,8 +244,8 @@ spec =
             { zodiac: A6 "Football"
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%A6")) sky
-          actual2 = over (barlow (key :: _ "zodiac.%A6")) toUpper sky
+          actual = preview (barlow @"zodiac.%A6") sky
+          actual2 = over (barlow @"zodiac.%A6") toUpper sky
         actual `shouldEqual` (Just "Football")
         actual2 `shouldEqual` { zodiac : A6 "FOOTBALL"}
 
@@ -255,7 +255,7 @@ spec =
             { zodiac: A5
             }
 
-          actual = preview (barlow (key :: _ "zodiac.%A5")) sky
+          actual = preview (barlow @"zodiac.%A5") sky
         actual `shouldEqual` (Just unit)
 
       it "should view into a multi sum type with multi argument constructors (right)" do
@@ -264,7 +264,7 @@ spec =
             { zodiac: B8 13
             }
 
-          actualLeft = preview (barlow (key :: _ "zodiac.%B8")) sky
-          actualRight = preview (barlow (key :: _ "zodiac.%C8")) sky
+          actualLeft = preview (barlow @"zodiac.%B8") sky
+          actualRight = preview (barlow @"zodiac.%C8") sky
         actualLeft `shouldEqual` (Just 13)
         actualRight `shouldEqual` Nothing

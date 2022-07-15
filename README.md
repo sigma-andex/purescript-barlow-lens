@@ -19,12 +19,12 @@ import Data.String (toUpper)
 
 sky = { zodiac: { virgo: { alpha: "Spica" } } }
 
-spica = view (barlow (key :: _ "zodiac.virgo.alpha")) sky
+spica = view (barlow @"zodiac.virgo.alpha") sky
 -- "Spica"
-upped = over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
+upped = over (barlow @"zodiac.virgo.alpha") toUpper sky
 -- { zodiac: { virgo: { alpha: "SPICA" } } }
     
--- alfa = view (barlow (key :: _ "zodiac.virgo.alfa")) sky 
+-- alfa = view (barlow @"zodiac.virgo.alfa") sky 
 -- doesn't compile
 ```
 
@@ -37,9 +37,9 @@ import Data.String (toUpper)
 
 sky = { zodiac: { virgo: { alpha: "Spica" } } }
 
-spica = view (key :: _ "zodiac.virgo.alpha") sky
+spica = view @"zodiac.virgo.alpha" sky
 -- "Spica"
-upped = over (key :: _ "zodiac.virgo.alpha") toUpper sky
+upped = over @"zodiac.virgo.alpha" toUpper sky
 -- { zodiac: { virgo: { alpha: "SPICA" } } }
 ```
 
@@ -72,7 +72,7 @@ sky =
         }
   }
 
-spica = preview (key :: _ "zodiac?.virgo?.alpha?") sky
+spica = preview @"zodiac?.virgo?.alpha?" sky
 ```
 
 #### Either
@@ -95,7 +95,7 @@ sky =
         }
   }
 
-spica = preview (key :: _ "zodiac>.virgo?.alpha<") sky
+spica = preview @"zodiac>.virgo?.alpha<" sky
 ```
 
 
@@ -123,7 +123,7 @@ sky =
       ]
   }
 
-upped = over (key :: _ "zodiac+.virgo?.star") toUpper sky
+upped = over @"zodiac+.virgo?.star" toUpper sky
 ```
 
 #### Newtype
@@ -147,7 +147,7 @@ sky =
         }
   }
 
-spica = preview (key :: _ "zodiac?.virgo!.alpha") sky
+spica = preview @"zodiac?.virgo!.alpha" sky
 ```
 
 #### Data types
@@ -183,7 +183,7 @@ sky =
       Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "δ Vir"}
   }
 
-upped = over (key :: _ "zodiac.%Virgo.%4.delta") toUpper sky
+upped = over @"zodiac.%Virgo.%4.delta" toUpper sky
 -- { zodiac: Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} }
 ```
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Update to VTAs
+
 ## v0.8.0
 - Move from `Optic'` to `Optic` to allow changing types when modifying a value.
 - Add helpers to further simplify lens construction

@@ -30,7 +30,7 @@ spec =
                 }
             }
 
-          actual = view (barlow (key :: _ "zodiac.virgo.alpha")) sky
+          actual = view (barlow @"zodiac.virgo.alpha") sky
         actual `shouldEqual` "Spica"
       it "should modify a record" do
         let
@@ -50,7 +50,7 @@ spec =
                 }
             }
 
-          actual = over (barlow (key :: _ "zodiac.virgo.alpha")) toUpper sky
+          actual = over (barlow @"zodiac.virgo.alpha") toUpper sky
         actual `shouldEqual` expected
       it "should view into a record with Maybe" do
         let
@@ -64,7 +64,7 @@ spec =
                   }
             }
 
-          actual = preview (barlow (key :: _ "zodiac?.virgo?.alpha?")) sky
+          actual = preview (barlow @"zodiac?.virgo?.alpha?") sky
         actual `shouldEqual` (Just "Spica")
       it "should modify a record with Maybe" do
         let
@@ -88,7 +88,7 @@ spec =
                   }
             }
 
-          actual = over (barlow (key :: _ "zodiac?.virgo?.alpha?")) toUpper sky
+          actual = over (barlow @"zodiac?.virgo?.alpha?") toUpper sky
         actual `shouldEqual` expected
       it "should view into a mixed record with Maybe" do
         let
@@ -101,7 +101,7 @@ spec =
                   }
             }
 
-          actual = preview (barlow (key :: _ "zodiac?.virgo.alpha")) sky
+          actual = preview (barlow @"zodiac?.virgo.alpha") sky
         actual `shouldEqual` (Just "Spica")
       it "should view into parts of a record" do
         let
@@ -120,7 +120,7 @@ spec =
                 }
             }
 
-          actual = preview (barlow (key :: _ "zodiac?")) sky
+          actual = preview (barlow @"zodiac?") sky
         actual `shouldEqual` (Just expected)
       it "should view into parts of a record (2)" do
         let
@@ -138,7 +138,7 @@ spec =
             { alpha: "Spica"
             }
 
-          actual = preview (barlow (key :: _ "zodiac?.virgo?")) sky
+          actual = preview (barlow @"zodiac?.virgo?") sky
         actual `shouldEqual` (Just expected)
       it "should view into a record with Either" do
         let
@@ -157,7 +157,7 @@ spec =
                 }
             }
 
-          actual = preview (barlow (key :: _ "zodiac>")) sky
+          actual = preview (barlow @"zodiac>") sky
         actual `shouldEqual` (Just expected)
       it "should view into a record with Either (2)" do
         let
@@ -171,7 +171,7 @@ spec =
                   }
             }
 
-          actual = preview (barlow (key :: _ "zodiac>.virgo>.alpha>")) sky
+          actual = preview (barlow @"zodiac>.virgo>.alpha>") sky
         actual `shouldEqual` (Just "Spica")
       it "should view into a record with mixed Just and Either" do
         let
@@ -185,7 +185,7 @@ spec =
                   }
             }
 
-          actual = preview (barlow (key :: _ "zodiac>.virgo?.alpha<")) sky
+          actual = preview (barlow @"zodiac>.virgo?.alpha<") sky
         actual `shouldEqual` (Just "Spica")
       it "should modify a record with mixed Just and Either" do
         let
@@ -211,7 +211,7 @@ spec =
                   }
             }
 
-          actual = over (barlow (key :: _ "zodiac>.virgo?.alpha<")) toUpper sky
+          actual = over (barlow @"zodiac>.virgo?.alpha<") toUpper sky
         actual `shouldEqual` expected
       it "should modify a record with mixed Just and Either (2)" do
         let
@@ -237,7 +237,7 @@ spec =
                 )
             }
 
-          actual = over (barlow (key :: _ "zodiac>?.virgo?>.alpha?<")) toUpper sky
+          actual = over (barlow @"zodiac>?.virgo?>.alpha?<") toUpper sky
         actual `shouldEqual` expected
       it "should modify a record with Array" do
         let
@@ -271,7 +271,7 @@ spec =
                 ]
             }
 
-          actual = over (barlow (key :: _ "zodiac+.virgo?.star")) toUpper sky
+          actual = over (barlow @"zodiac+.virgo?.star") toUpper sky
         actual `shouldEqual` expected
       
       it "should modify a record with Array (2)" do
@@ -306,7 +306,7 @@ spec =
                 ]
             }
 
-          actual = over (barlow (key :: _ "zodiac+.virgo?.star>")) toUpper sky
+          actual = over (barlow @"zodiac+.virgo?.star>") toUpper sky
         actual `shouldEqual` expected
       it "should view into a record with Newtype" do
         let
@@ -319,7 +319,7 @@ spec =
                   }
             }
 
-          actual = preview (barlow (key :: _ "zodiac?.virgo!.alpha")) sky
+          actual = preview (barlow @"zodiac?.virgo!.alpha") sky
         actual `shouldEqual` (Just "Spica")
       it "should view into a record with Newtype (2)" do
         let
@@ -332,7 +332,7 @@ spec =
                   }
             }
 
-          actual = preview (barlow (key :: _ "zodiac?.virgo.alpha!")) sky
+          actual = preview (barlow @"zodiac?.virgo.alpha!") sky
         actual `shouldEqual` (Just "Spica")
       it "should view into a data type" do
         let
@@ -345,5 +345,5 @@ spec =
                   }
             }
 
-          actual = preview (barlow (key :: _ "?>.zodiac?.virgo.alpha!")) sky
+          actual = preview (barlow @"?>.zodiac?.virgo.alpha!") sky
         actual `shouldEqual` (Just "Spica")

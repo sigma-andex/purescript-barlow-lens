@@ -2,7 +2,7 @@ module Data.Lens.Barlow.OpticSpec where
 
 import Data.Either (Either(..))
 import Data.Lens (over)
-import Data.Lens.Barlow (barlow, key)
+import Data.Lens.Barlow (barlow)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Prelude (Unit, discard, show, (<>), (>>>))
@@ -57,7 +57,7 @@ spec =
                 }
             }
 
-          actual = over (barlow (key :: _ "zodiac.sagittarius+.id")) show sky
+          actual = over (barlow @"zodiac.sagittarius+.id") show sky
         actual `shouldEqual` expected
       it "should modify a record with changed types (2)" do
         let
@@ -72,7 +72,7 @@ spec =
                 Left { sagittarius: Just { rukbat: Right { id: "1 !!!" } } }
             }
 
-          actual = over (barlow (key :: _ "zodiac<.sagittarius?.rukbat>.id")) (show >>> (_ <> " !!!")) sky
+          actual = over (barlow @"zodiac<.sagittarius?.rukbat>.id") (show >>> (_ <> " !!!")) sky
         actual `shouldEqual` expected
       it "should modify a record with changed types (3)" do
         let
@@ -82,5 +82,5 @@ spec =
           expected :: { zodiac :: { sagittarius :: { first :: String } } }
           expected = { zodiac: { sagittarius: { first: "Rukbat" } } }
 
-          actual = over (barlow (key :: _ "zodiac.sagittarius")) (\{ alpha } -> { first: alpha }) sky
+          actual = over (barlow @"zodiac.sagittarius") (\{ alpha } -> { first: alpha }) sky
         actual `shouldEqual` expected
