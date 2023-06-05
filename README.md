@@ -6,6 +6,8 @@ Barlow lens increases your magnification and let's you see the stars ✨
 
 ## Installation
 
+**Note:** Version `v1.0.0` requires Purescript > `v0.15.10`. If you are on an older version, use [`v0.9.0`](https://github.com/sigma-andex/purescript-barlow-lens/tree/v0.9.0) instead or upgrade your Purescript version.
+
 ```bash
 spago install barlow-lens
 ```
