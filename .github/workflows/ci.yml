@@ -12,7 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: purescript-contrib/setup-purescript@latest
+      - uses: purescript-contrib/setup-purescript@main
+        with:
+          purescript: "latest"
 
       - uses: actions/setup-node@v2
         with:
