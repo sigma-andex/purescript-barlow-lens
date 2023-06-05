@@ -3,6 +3,13 @@
 ## Unreleased
 - Update to VTAs
 
+## v1.0.0
+- Update to Purescript `0.15.10`
+- Use visible type applications instead of proxy syntax ([#26](https://github.com/sigma-andex/purescript-barlow-lens/pull/26))
+
+## v0.9.0
+- Update to Purescript `v0.15.0`
+
 ## v0.8.0
 - Move from `Optic'` to `Optic` to allow changing types when modifying a value.
 - Add helpers to further simplify lens construction
