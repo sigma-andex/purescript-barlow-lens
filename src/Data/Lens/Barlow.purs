@@ -11,14 +11,14 @@ class Barlow (string :: Symbol) p s t a b | string -> s t a b where
 
 -- | Type-safe lens for zooming into a deeply nested record
 -- |
--- | ```purescript 
+-- | ```purescript
 -- | sky = { zodiac: { virgo: { alpha: "Spica" } } }
 -- | view (barlow @"zodiac.virgo.alpha") sky
--- | -- Spica 
+-- | -- Spica
 -- | over (barlow @"zodiac.virgo.alpha") toUpper sky
 -- | -- { zodiac: { virgo: { alpha: "SPICA" } } }
 -- | ```
-barlow :: forall @string lenses p s t a b. 
+barlow :: forall @string lenses p s t a b.
   ParseSymbol string lenses =>
   ConstructBarlow lenses p s t a b =>
   IsSymbol string => Optic p s t a b

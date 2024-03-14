@@ -189,7 +189,7 @@ spec =
         actual `shouldEqual` (Just "Spica")
       it "should modify a record with mixed Just and Either" do
         let
-          -- type annotation necessary in this test for Show 
+          -- type annotation necessary in this test for Show
           sky :: { zodiac :: Either String { virgo :: Maybe { alpha :: Either String Int } } }
           sky =
             { zodiac:
@@ -215,7 +215,7 @@ spec =
         actual `shouldEqual` expected
       it "should modify a record with mixed Just and Either (2)" do
         let
-          -- type annotation necessary in this test for Show 
+          -- type annotation necessary in this test for Show
           sky :: { zodiac :: Either String (Maybe { virgo :: Maybe (Either Int { alpha :: Maybe (Either String Int) }) }) }
           sky =
             { zodiac:
@@ -273,7 +273,7 @@ spec =
 
           actual = over (barlow @"zodiac+.virgo?.star") toUpper sky
         actual `shouldEqual` expected
-      
+
       it "should modify a record with Array (2)" do
         let
           sky =
