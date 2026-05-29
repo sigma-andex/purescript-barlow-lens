@@ -1,6 +1,6 @@
 name: CI
 
-on: 
+on:
   push:
     branches: [main]
   pull_request:
@@ -10,30 +10,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # spago 1.x uses node:sqlite, stable only from Node 24
+          node-version: "24"
 
       - uses: purescript-contrib/setup-purescript@main
         with:
-          purescript: "unstable"
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14"
+          purescript: "0.15.16"
+          # NB: setup-purescript's "latest" is spago-LEGACY (Dhall). New spago
+          # comes only from "unstable" or a pinned 1.x version.
+          spago: "1.0.4"
 
       - name: Cache PureScript dependencies
-        uses: actions/cache@v2
-        # This cache uses the .dhall files to know when it should reinstall
-        # and rebuild packages. It caches both the installed packages from
-        # the `.spago` directory and compilation artifacts from the `output`
-        # directory. When restored the compiler will rebuild any files that
-        # have changed. If you do not want to cache compiled output, remove
-        # the `output` path.
+        uses: actions/cache@v4
+        # Keyed on spago.lock so the cache is rebuilt when dependencies change.
+        # Caches installed packages (.spago) and compiled output (output).
         with:
-          key: ${{ runner.os }}-spago-${{ hashFiles('**/*.dhall') }}
+          key: ${{ runner.os }}-spago-${{ hashFiles('spago.lock') }}
           path: |
             .spago
             output
 
       - run: spago build
 
-      - run: spago -x test.dhall test
+      - run: spago test
