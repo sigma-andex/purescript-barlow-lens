@@ -1,0 +1,4 @@
+allowBuilds:
+  cpu-features: false
+  purescript: true
+  ssh2: false

@@ -1,11 +1,12 @@
 module Data.Lens.Barlow.Parser where
 
 import Data.Lens.Barlow.Types
+import Prim.Int as Int
 import Prim.Symbol as Symbol
 import Prim.TypeError (class Fail, Text)
 
-class ParsePercentage :: forall k. Symbol -> Symbol -> k -> Symbol -> Constraint
-class ParsePercentage (head :: Symbol) (tail :: Symbol) out (rest :: Symbol) | head tail -> out rest
+-- | Parses what follows a `%` into either `ProductIndex n` or `Percentage name`.
+class ParsePercentage (head :: Symbol) (tail :: Symbol) (out :: LensType) (rest :: Symbol) | head tail -> out rest
 
 class ParsePercentageSymbol (head :: Symbol) (tail :: Symbol) (out :: Symbol) (rest :: Symbol) | head tail -> out rest
 
@@ -19,22 +20,72 @@ else instance parsePercentageSymbolCons ::
   ) =>
   ParsePercentageSymbol h t out trest
 
-instance parsePercentage1 :: ParsePercentage "1" t N1 t
-else instance parsePercentage2 :: ParsePercentage "2" t N2 t
-else instance parsePercentage3 :: ParsePercentage "3" t N3 t
-else instance parsePercentage4 :: ParsePercentage "4" t N4 t
-else instance parsePercentage5 :: ParsePercentage "5" t N5 t
-else instance parsePercentage6 :: ParsePercentage "6" t N6 t
-else instance parsePercentage7 :: ParsePercentage "7" t N7 t
-else instance parsePercentage8 :: ParsePercentage "8" t N8 t
-else instance parsePercentage9 :: ParsePercentage "9" t N9 t
-else instance parsePercentageEnd :: ParsePercentage h "" h ""
-else instance parsePercentagSym ::
+-- | `%` followed by digits is a product index (a type-level Int), anything else a constructor name (a Symbol).
+instance parsePercentage ::
+  ( DigitValue h digit
+  , ParsePercentageStart digit h t out rest
+  ) =>
+  ParsePercentage h t out rest
+
+class ParsePercentageStart (digit :: DigitResult) (head :: Symbol) (tail :: Symbol) (out :: LensType) (rest :: Symbol) | digit head tail -> out rest
+
+instance parsePercentageStartDigit ::
+  ( ParseNumber t d n rest
+  ) =>
+  ParsePercentageStart (IsDigit d) h t (ProductIndex n) rest
+
+instance parsePercentageStartEnd :: ParsePercentageStart NotDigit h "" (Percentage h) ""
+else instance parsePercentageStartSym ::
   ( Symbol.Cons th tt t
   , ParsePercentageSymbol th tt tout trest
   , Symbol.Cons h tout out
   ) =>
-  ParsePercentage h t out trest
+  ParsePercentageStart NotDigit h t (Percentage out) trest
+
+-- | Reads the remaining digits of a number, leaving everything after the last digit as `rest`.
+class ParseNumber (string :: Symbol) (acc :: Int) (out :: Int) (rest :: Symbol) | string acc -> out rest
+
+instance parseNumberEnd :: ParseNumber "" acc acc ""
+else instance parseNumberCons ::
+  ( Symbol.Cons h t string
+  , DigitValue h digit
+  , ParseNumberStep digit h t acc out rest
+  ) =>
+  ParseNumber string acc out rest
+
+class ParseNumberStep (digit :: DigitResult) (head :: Symbol) (tail :: Symbol) (acc :: Int) (out :: Int) (rest :: Symbol) | digit head tail acc -> out rest
+
+instance parseNumberStepDigit ::
+  ( Int.Mul acc 10 acc10
+  , Int.Add acc10 d acc'
+  , ParseNumber t acc' out rest
+  ) =>
+  ParseNumberStep (IsDigit d) h t acc out rest
+
+instance parseNumberStepOther ::
+  ( Symbol.Cons h t rest
+  ) =>
+  ParseNumberStep NotDigit h t acc acc rest
+
+data DigitResult
+
+foreign import data IsDigit :: Int -> DigitResult
+
+foreign import data NotDigit :: DigitResult
+
+class DigitValue (char :: Symbol) (digit :: DigitResult) | char -> digit
+
+instance DigitValue "0" (IsDigit 0)
+else instance DigitValue "1" (IsDigit 1)
+else instance DigitValue "2" (IsDigit 2)
+else instance DigitValue "3" (IsDigit 3)
+else instance DigitValue "4" (IsDigit 4)
+else instance DigitValue "5" (IsDigit 5)
+else instance DigitValue "6" (IsDigit 6)
+else instance DigitValue "7" (IsDigit 7)
+else instance DigitValue "8" (IsDigit 8)
+else instance DigitValue "9" (IsDigit 9)
+else instance DigitValue c NotDigit
 
 -- | Parses the inside of `[...]` up to (and consuming) the closing `]`.
 class ParseBracket (head :: Symbol) (tail :: Symbol) (out :: Symbol) (rest :: Symbol) | head tail -> out rest
@@ -174,10 +225,10 @@ else instance parse1ExclamationMark ::
   Parse1Symbol "!" s (TCons ExclamationMark rest)
 else instance parse1Percentage ::
   ( Symbol.Cons th tt t
-  , ParsePercentage th tt tout trest
+  , ParsePercentage th tt lens trest
   , ParseSymbol trest rest
   ) =>
-  Parse1Symbol "%" t (TCons (Percentage tout) rest)
+  Parse1Symbol "%" t (TCons lens rest)
 else instance parse1Other ::
   ( Symbol.Cons th tt t
   , ParseRecordField th tt tout trest

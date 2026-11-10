@@ -22,6 +22,14 @@ derive instance Eq Star
 instance Show Star where
   show (Star n m) = "Star " <> n <> " " <> show m
 
+-- | A constructor with more than 9 arguments
+data Catalogue = Catalogue Int Int Int Int Int Int Int Int Int String { name :: String } Int
+
+derive instance Generic Catalogue _
+
+catalogue :: Catalogue
+catalogue = Catalogue 1 2 3 4 5 6 7 8 9 "ten" { name: "eleven" } 12
+
 spec :: Spec Unit
 spec =
   describe "Data.Lens.Barlow" do
@@ -103,3 +111,12 @@ spec =
       it "should provide traverseOf" do
         Barlow.traverseOf @"zodiac+.name" (\n -> if n == "" then Nothing else Just (toUpper n)) sky
           `shouldEqual` Just { zodiac: [ { name: "VIRGO" }, { name: "LEO" } ] }
+
+    describe "product indices above 9" do
+      it "should zoom into the 10th and later arguments" do
+        Barlow.view @"%Catalogue.%10" catalogue `shouldEqual` "ten"
+        Barlow.view @"%Catalogue.%11.name" catalogue `shouldEqual` "eleven"
+        Barlow.view @"%Catalogue.%12" catalogue `shouldEqual` 12
+        Barlow.view @"%Catalogue.%1" catalogue `shouldEqual` 1
+      it "should modify the 11th argument" do
+        Barlow.view @"%Catalogue.%11.name" (Barlow.set @"%Catalogue.%11.name" "XI" catalogue) `shouldEqual` "XI"

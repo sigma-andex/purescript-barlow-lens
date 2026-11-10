@@ -37,3 +37,6 @@ jobs:
       - run: spago build
 
       - run: spago test
+
+      - name: Check custom compile errors
+        run: bash test-compile-errors/run.sh

@@ -48,6 +48,9 @@ foreign import data ExclamationMark :: LensType
 
 foreign import data Percentage :: forall k. k -> LensType
 
+-- | `%n` – the n-th argument of a constructor (or `Tuple`)
+foreign import data ProductIndex :: Int -> LensType
+
 foreign import data RecordField :: Symbol -> LensType
 
 -- | `#` – indexed traversal

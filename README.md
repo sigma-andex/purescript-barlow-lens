@@ -6,7 +6,7 @@ Barlow lens increases your magnification and let's you see the stars ✨
 
 ## Installation
 
-**Note:** Version `v1.0.0` requires Purescript > `v0.15.10`. If you are on an older version, use [`v0.9.0`](https://github.com/sigma-andex/purescript-barlow-lens/tree/v0.9.0) instead or upgrade your Purescript version.
+**Note:** Versions `v1.0.0` and later require Purescript > `v0.15.10`. If you are on an older version, use [`v0.9.0`](https://github.com/sigma-andex/purescript-barlow-lens/tree/v0.9.0) instead or upgrade your Purescript version.
 
 ```bash
 spago install barlow-lens
@@ -156,13 +156,21 @@ sky =
 spica = preview @"zodiac?.virgo!.alpha" sky
 ```
 
+When you select a field (or a [sub-record](#Sub-records)) on a newtype around a record, the `!` is optional, so this works too:
+
+```purescript
+spica = preview @"zodiac?.virgo.alpha" sky
+```
+
+Use `!` explicitly for newtypes around anything else, e.g. `newtype Name = Name String`. Note that zooming through a newtype can't change the type of the focus.
+
 #### Data types
 
 Barlow supports zooming into arbitrary sum and product types as long as there is a `Generic` instance. 
 
 Use `%<NAME>` to zoom into sum types, where `<NAME>` is the name of your data constructor. E.g. `%Virgo` for the data constructor `Virgo`. 
 
-Use `%<INDEX>` to zoom into product types, where `<INDEX>` is an integer between 1 and 9. Note that counting for product types and tuples usually starts with 1 and not 0. So the first element of a product is `%1`.
+Use `%<INDEX>` to zoom into product types, where `<INDEX>` is a positive integer. Note that counting for product types and tuples usually starts with 1 and not 0. So the first element of a product is `%1`.
 
 It is more readable if you separate your sum lens from your product lens with a `.` dot. 
 
@@ -310,6 +318,15 @@ barlow: `?` expects a Maybe, but got
 String
 ```
 
+```
+barlow: the constructor `Virgoo` does not exist in Constellation
+available constructors: Virgo, Leo, Cancer
+```
+
+```
+barlow: `%5` is out of range – this constructor only has 4 arguments
+```
+
 ## Development
 
 The toolchain (`purs`, `spago`, `purs-tidy`) is pinned in `package.json` and installed with [pnpm](https://pnpm.io). `pnpm-workspace.yaml` already allows the `purescript` package to run its install script, which downloads the `purs` compiler.
@@ -318,6 +335,12 @@ The toolchain (`purs`, `spago`, `purs-tidy`) is pinned in `package.json` and ins
 pnpm install
 pnpm build   # spago build
 pnpm test    # spago test
+```
+
+The custom compile errors are checked separately, by compiling snippets that must fail (see `test-compile-errors/`):
+
+```bash
+bash test-compile-errors/run.sh
 ```
 
 ### Editor setup
