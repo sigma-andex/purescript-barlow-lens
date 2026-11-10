@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v2.0.0
 - Update to VTAs
 - Add indexed traversals with `#` and `ibarlow`; nested indices are combined into tuples
 - Add `[key]` for `ix` (arrays, lists, maps, objects, ...) and `[?key]` for `at`
@@ -10,7 +10,12 @@
 - Add type-changing `%1` / `%2` for `Tuple`
 - Add custom compile errors for common mistakes (unknown field, wrong type for `?`, `<`, `>`, `+`, invalid index, unterminated `[`/`{`, ...)
 - Add helpers `toListOf`, `firstOf`, `lastOf`, `lengthOf`, `has`, `hasn't`, `traverseOf`, `iover`, `itoListOf`, `ifoldMapOf`, `itraverseOf`
+- Add custom compile errors for unknown constructors (listing the available ones) and out-of-range `%n`
+- Unwrap newtypes around records automatically when selecting a field or `{...}`, making `!` optional there
+- Support product indices above 9 (`%10`, `%11`, ...)
+- Check custom compile errors in CI (`test-compile-errors/`)
 - Breaking: `#`, `[` and `{` now end a field name in a path
+- Breaking: product indices are type-level `Int`s (`ProductIndex n`) instead of `Percentage` with the `Nat` types `N1`…`N9`
 
 ## v1.0.0
 - Update to Purescript `0.15.10`
