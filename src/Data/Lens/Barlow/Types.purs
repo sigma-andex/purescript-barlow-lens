@@ -49,3 +49,22 @@ foreign import data ExclamationMark :: LensType
 foreign import data Percentage :: forall k. k -> LensType
 
 foreign import data RecordField :: Symbol -> LensType
+
+-- | `#` – indexed traversal
+foreign import data Hash :: LensType
+
+-- | `[key]` – `ix key` (or a record field, for records)
+foreign import data Bracket :: Symbol -> LensType
+
+-- | `[?key]` – `at key`
+foreign import data BracketAt :: Symbol -> LensType
+
+-- | `{a,b}` – a lens onto a sub-record
+foreign import data Fields :: TList -> LensType
+
+-- | Result of splitting a lens list at the first `#`
+data Split
+
+foreign import data NoHash :: TList -> Split
+
+foreign import data HashAt :: TList -> TList -> Split
