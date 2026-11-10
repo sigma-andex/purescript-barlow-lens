@@ -133,7 +133,7 @@ upped = over @"zodiac+.virgo?.star" toUpper sky
 ```
 
 #### Newtype
-Use `!` to zoom into a `Newtype`.
+Newtypes around records are unwrapped automatically when you select a field, so they work just like plain records.
 
 ```purescript
 import Data.Lens.Barlow
@@ -141,28 +141,30 @@ import Data.Lens.Barlow.Helpers
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 
-newtype Alpha = Alpha { alpha :: String }
-instance Newtype Alpha { alpha :: String }
+newtype Virgo = Virgo { alpha :: String }
+derive instance Newtype Virgo _
 
-sky =
-  { zodiac:
-      Just
-        { virgo:
-            Alpha { alpha: "Spica"
-            }
-        }
-  }
+sky = { zodiac: Just { virgo: Virgo { alpha: "Spica" } } }
 
-spica = preview @"zodiac?.virgo!.alpha" sky
+spica = preview @"zodiac?.virgo.alpha" sky
+-- Just "Spica"
 ```
 
-When you select a field (or a [sub-record](#Sub-records)) on a newtype around a record, the `!` is optional, so this works too:
+This also works for nested newtypes and for [sub-records](#Sub-records) (`"virgo.{alpha}"`).
+
+Use `!` to zoom into any other newtype explicitly:
 
 ```purescript
-spica = preview @"zodiac?.virgo.alpha" sky
+newtype Name = Name String
+derive instance Newtype Name _
+
+sky = { zodiac: Just { virgo: { alpha: Name "Spica" } } }
+
+spica = preview @"zodiac?.virgo.alpha!" sky
+-- Just "Spica"
 ```
 
-Use `!` explicitly for newtypes around anything else, e.g. `newtype Name = Name String`. Note that zooming through a newtype can't change the type of the focus.
+Zooming through a newtype can't change the type of the focus. For example, `over` can't turn a `String` field inside a newtype into an `Int`.
 
 #### Data types
 
