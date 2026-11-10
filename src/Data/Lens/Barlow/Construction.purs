@@ -2,18 +2,23 @@ module Data.Lens.Barlow.Construction where
 
 import Data.Either (Either)
 import Data.Generic.Rep (class Generic, Argument, Constructor, NoArguments, Product, Sum)
-import Data.Lens (class Wander, Optic, _Just, _Left, _Right, traversed)
+import Data.Lens (class Wander, Optic, _1, _2, _Just, _Left, _Right, traversed)
+import Data.Lens.At (class At, at)
+import Data.Lens.Index (class Index, ix)
+import Data.Lens.Barlow.Internal (class FieldOf, class IndexKey, class SelectFields, class RecordElem, class TraverseFields, fieldLens, indexKey, selectFields, traverseRecord, class Unreachable, unreachable)
+import Data.Tuple (Tuple)
+import Prim.RowList as RL
+import Prim.TypeError (class Fail, Above, Beside, Quote, QuoteLabel, Text)
 import Data.Lens.Barlow.Generic (_Argument, _Constructor, _NoArguments, _ProductLeft, _ProductRight, _SumLeft, _SumRight, _ToGeneric)
-import Data.Lens.Barlow.Types (ExclamationMark, LeftArrow, N1, Percentage, Plus, QuestionMark, RecordField, RightArrow, S, TCons, TList, TNil)
+import Data.Lens.Barlow.Types (Bracket, BracketAt, ExclamationMark, Fields, LeftArrow, N1, N2, Percentage, Plus, QuestionMark, RecordField, RightArrow, S, TCons, TList, TNil)
 import Data.Lens.Iso.Newtype (_Newtype)
-import Data.Lens.Record (prop)
 import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
 import Data.Profunctor (class Profunctor)
 import Data.Profunctor.Choice (class Choice)
 import Data.Profunctor.Strong (class Strong)
 import Data.Traversable (class Traversable)
-import Prelude (Unit, (<<<))
+import Prelude (Unit, identity, (<<<))
 import Prim.Row as Row
 import Type.Prelude (class IsSymbol)
 import Type.Proxy (Proxy(..))
@@ -251,8 +256,11 @@ else instance
 class ConstructBarlow (lenses :: TList) p s t a b | lenses s -> t a b where
   constructBarlow :: Proxy lenses -> Optic p s t a b
 
+-- Empty path: identity. Lets new lens types only define a cons instance.
+instance ConstructBarlow TNil p s t s t where
+  constructBarlow _ = identity
 -- Nil instance for question mark 
-instance
+else instance
   ( Choice p
   ) =>
   ConstructBarlow (TCons QuestionMark TNil) p (Maybe a) (Maybe b) a b where
@@ -269,6 +277,16 @@ else instance
   ) =>
   ConstructBarlow (TCons LeftArrow TNil) p (Either a r) (Either b r) a b where
   constructBarlow _ = _Left
+-- Cons instance for `+` on a homogeneous record: traverses all fields
+else instance
+  ( RL.RowToList r rl
+  , RecordElem rl restA
+  , TraverseFields rl r restA
+  , ConstructBarlow rest p restA restA a a
+  , Wander p
+  ) =>
+  ConstructBarlow (TCons Plus rest) p { | r } { | r } a a where
+  constructBarlow _ = traverseRecord @restA (Proxy :: Proxy rl) <<< constructBarlow (Proxy :: Proxy rest)
 -- Nil instance for plus
 else instance
   ( Wander p
@@ -286,12 +304,12 @@ else instance constructBarlowNilExclamationMark ::
 -- Nil instance for record selector
 else instance
   ( IsSymbol sym
-  , Row.Cons sym a rc x
+  , FieldOf sym x a rc
   , Row.Cons sym b rc y
   , Strong p
   ) =>
   ConstructBarlow (TCons (RecordField sym) TNil) p (Record x) (Record y) a b where
-  constructBarlow _ = prop (Proxy :: Proxy sym)
+  constructBarlow _ = fieldLens (Proxy :: Proxy sym)
 -- Cons instance for question mark
 else instance
   ( ConstructBarlow rest p restA restB a b
@@ -362,13 +380,99 @@ else instance
 -- Cons instance for record selector
 else instance
   ( IsSymbol sym
+  , FieldOf sym rx restA thru
   , ConstructBarlow rest p restA restB a b
-  , Row.Cons sym restA thru rx
   , Row.Cons sym restB thru ry
   , Strong p
   ) =>
   ConstructBarlow (TCons (RecordField sym) rest) p { | rx } { | ry } a b where
-  constructBarlow _ = prop (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
+  constructBarlow _ = fieldLens (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
+-- `[key]` on a record: a field, which may contain special characters
+else instance
+  ( IsSymbol sym
+  , FieldOf sym rx restA thru
+  , ConstructBarlow rest p restA restB a b
+  , Row.Cons sym restB thru ry
+  , Strong p
+  ) =>
+  ConstructBarlow (TCons (Bracket sym) rest) p { | rx } { | ry } a b where
+  constructBarlow _ = fieldLens (Proxy :: Proxy sym) <<< constructBarlow (Proxy :: Proxy rest)
+-- `[key]` on anything with an `Index` instance (Array, List, Map, Object, ...)
+else instance
+  ( Index s k v
+  , IndexKey sym k
+  , ConstructBarlow rest p v v a a
+  , Wander p
+  ) =>
+  ConstructBarlow (TCons (Bracket sym) rest) p s s a a where
+  constructBarlow _ = ix (indexKey (Proxy :: Proxy sym)) <<< constructBarlow (Proxy :: Proxy rest)
+-- `[?key]` on anything with an `At` instance (Map, Object, ...)
+else instance
+  ( At s k v
+  , IndexKey sym k
+  , ConstructBarlow rest p (Maybe v) (Maybe v) a a
+  , Strong p
+  ) =>
+  ConstructBarlow (TCons (BracketAt sym) rest) p s s a a where
+  constructBarlow _ = at (indexKey (Proxy :: Proxy sym)) <<< constructBarlow (Proxy :: Proxy rest)
+-- `{a,b}`: a lens onto a sub-record
+else instance
+  ( SelectFields fields r sub
+  , ConstructBarlow rest p { | sub } { | sub } a a
+  , Strong p
+  ) =>
+  ConstructBarlow (TCons (Fields fields) rest) p { | r } { | r } a a where
+  constructBarlow _ = selectFields (Proxy :: Proxy fields) <<< constructBarlow (Proxy :: Proxy rest)
+-- `%1` / `%2` on a Tuple: type-changing `_1` / `_2`
+else instance
+  ( ConstructBarlow rest p restA restB a b
+  , Strong p
+  ) =>
+  ConstructBarlow (TCons (Percentage N1) rest) p (Tuple restA c) (Tuple restB c) a b where
+  constructBarlow _ = _1 <<< constructBarlow (Proxy :: Proxy rest)
+else instance
+  ( ConstructBarlow rest p restA restB a b
+  , Strong p
+  ) =>
+  ConstructBarlow (TCons (Percentage N2) rest) p (Tuple c restA) (Tuple c restB) a b where
+  constructBarlow _ = _2 <<< constructBarlow (Proxy :: Proxy rest)
+-- Readable errors for lenses applied to the wrong type
+else instance
+  ( Fail (Above (Text "barlow: `?` expects a Maybe, but got") (Quote s))
+  , Unreachable
+  ) =>
+  ConstructBarlow (TCons QuestionMark rest) p s t a b where
+  constructBarlow _ = unreachable
+else instance
+  ( Fail (Above (Text "barlow: `>` expects an Either, but got") (Quote s))
+  , Unreachable
+  ) =>
+  ConstructBarlow (TCons RightArrow rest) p s t a b where
+  constructBarlow _ = unreachable
+else instance
+  ( Fail (Above (Text "barlow: `<` expects an Either, but got") (Quote s))
+  , Unreachable
+  ) =>
+  ConstructBarlow (TCons LeftArrow rest) p s t a b where
+  constructBarlow _ = unreachable
+else instance
+  ( Fail (Above (Text "barlow: `+` expects a Traversable or a record, but got") (Quote s))
+  , Unreachable
+  ) =>
+  ConstructBarlow (TCons Plus rest) p s t a b where
+  constructBarlow _ = unreachable
+else instance
+  ( Fail (Above (Beside (Text "barlow: cannot select the field ") (Beside (QuoteLabel sym) (Text " because this is not a record:"))) (Quote s))
+  , Unreachable
+  ) =>
+  ConstructBarlow (TCons (RecordField sym) rest) p s t a b where
+  constructBarlow _ = unreachable
+else instance
+  ( Fail (Above (Text "barlow: `{...}` expects a record, but got") (Quote s))
+  , Unreachable
+  ) =>
+  ConstructBarlow (TCons (Fields fields) rest) p s t a b where
+  constructBarlow _ = unreachable
 -- Instance for generic
 else instance
   ( Generic s repS

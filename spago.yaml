@@ -8,6 +8,7 @@ package:
     - prelude
     - profunctor
     - profunctor-lenses
+    - record
     - tuples
     - typelevel-prelude
   name: barlow-lens
@@ -16,10 +17,12 @@ package:
     # This works like `package.dependencies`
     dependencies:
       - aff
+      - foreign-object
+      - ordered-collections
       - effect
       - spec
       - spec-discovery
 workspace:
-  extra_packages: {}
+  extraPackages: {}
   packageSet:
     registry: 77.4.0

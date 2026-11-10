@@ -13,6 +13,7 @@
             "prelude",
             "profunctor",
             "profunctor-lenses",
+            "record",
             "tuples",
             "typelevel-prelude"
           ]
@@ -21,6 +22,8 @@
           "dependencies": [
             "aff",
             "effect",
+            "foreign-object",
+            "ordered-collections",
             "spec",
             "spec-discovery"
           ]

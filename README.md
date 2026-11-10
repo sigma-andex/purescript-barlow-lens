@@ -53,6 +53,10 @@ Barlow supports lens creation for the following types:
 - 📜 [`Array`](#Array-and-other-Traversables) (and other `Traversable`s)
 - 🎁 [`Newtype`](#Newtype)
 - 🤖 [`Data types`](#Data-types)
+- 👯 [`Tuples`](#Tuples)
+- 🔢 [`Indexed access`](#Indexed-access) with `[key]` and `[?key]`
+- 🧩 [`Sub-records`](#Sub-records) with `{a,b}`
+- 🧭 [`Indexed traversals`](#Indexed-traversals) with `#`
 
 ### Deep sky 🌌
 
@@ -188,6 +192,143 @@ sky =
 upped = over @"zodiac.%Virgo.%4.delta" toUpper sky
 -- { zodiac: Virgo { alpha : "Spica"} { beta: "β Vir"} { gamma: "γ Vir B"} { delta: "Δ VIR"} }
 ```
+
+#### Tuples
+
+Use `%1` and `%2` to zoom into the first and second element of a `Tuple`. Unlike other data types, tuples support changing the type of the focus.
+
+```purescript
+sky = { pair: Tuple "Spica" 1 }
+
+view @"pair.%1" sky
+-- "Spica"
+set @"pair.%2" "one" sky
+-- { pair: Tuple "Spica" "one" }
+```
+
+Nested tuples are nested optics: in `Tuple a (Tuple b c)`, `c` is at `%2.%2`.
+
+#### Indexed access
+
+Use `[key]` to zoom into a single element of anything with an `Index` instance (`Array`, `List`, `Map`, `Object`, ...). Keys can be numbers (for `Int` keys) or text (for `String` keys).
+
+```purescript
+sky =
+  { zodiac: [ { name: "Virgo" }, { name: "Leo" } ]
+  , named: Map.fromFoldable [ Tuple "virgo" "Spica" ]
+  }
+
+preview @"zodiac[1].name" sky
+-- Just "Leo"
+preview @"named[virgo]" sky
+-- Just "Spica"
+```
+
+Use `[?key]` to get a lens onto `Maybe` the value (via `At`), which lets you insert or delete entries:
+
+```purescript
+set @"named[?leo]" (Just "Regulus") sky   -- inserts
+set @"named[?virgo]" Nothing sky          -- deletes
+```
+
+On records, `[field]` selects a field, so you can use field names containing special characters such as `.`, `?` or `+`:
+
+```purescript
+view @"[alpha.centauri].name" { "alpha.centauri": { name: "Rigil Kentaurus" } }
+```
+
+#### Sub-records
+
+Use `{a,b}` to zoom into several fields of a record at once:
+
+```purescript
+sky = { virgo: "Spica", leo: "Regulus", cancer: "Tarf" }
+
+view @"{virgo, leo}" sky
+-- { virgo: "Spica", leo: "Regulus" }
+set @"{virgo, leo}" { virgo: "α Vir", leo: "α Leo" } sky
+-- { virgo: "α Vir", leo: "α Leo", cancer: "Tarf" }
+```
+
+`+` also works on records whose fields all have the same type, traversing every field:
+
+```purescript
+over @"{virgo, leo}+" toUpper sky
+-- { virgo: "SPICA", leo: "REGULUS", cancer: "Tarf" }
+```
+
+#### Indexed traversals
+
+Use `#` instead of `+` to traverse a container while keeping the position or key of each element. This gives you an indexed optic, created with `ibarlow` or used with the indexed helpers (`iover`, `itoListOf`, `ifoldMapOf`, `itraverseOf`).
+
+```purescript
+sky =
+  { zodiac:
+      [ { stars: [ "Spica", "Porrima" ] }
+      , { stars: [ "Regulus" ] }
+      ]
+  }
+
+itoListOf @"zodiac#.stars" sky
+-- (Tuple 0 ["Spica","Porrima"]) : (Tuple 1 ["Regulus"]) : Nil
+```
+
+The index comes from `TraversableWithIndex`: positions for `Array` and `List`, keys for `Map`. On a record whose fields all have the same type, the index is the field name.
+
+Several `#` combine their indices into nested tuples:
+
+```purescript
+itoListOf @"zodiac#.stars#" sky
+-- (Tuple (Tuple 0 0) "Spica") : (Tuple (Tuple 0 1) "Porrima") : (Tuple (Tuple 1 0) "Regulus") : Nil
+
+iover @"zodiac#.stars#" (\(Tuple i j) star -> show i <> "/" <> show j <> " " <> star) sky
+```
+
+`ibarlow` also works as a regular `IndexedTraversal`:
+
+```purescript
+stars :: IndexedTraversal' (Tuple Int Int) Sky String
+stars = ibarlow @"zodiac#.stars#"
+```
+
+### Helpers
+
+`Data.Lens.Barlow.Helpers` provides `view`, `preview`, `over`, `set`, `foldOf`, `toArrayOf`, `toListOf`, `firstOf`, `lastOf`, `lengthOf`, `has`, `hasn't` and `traverseOf`, plus the indexed `iover`, `itoListOf`, `ifoldMapOf` and `itraverseOf`.
+
+### Error messages
+
+Common mistakes produce readable compile errors, for example:
+
+```
+barlow: the field alfa does not exist in the record
+{ alpha :: String
+}
+```
+
+```
+barlow: `?` expects a Maybe, but got
+String
+```
+
+## Development
+
+The toolchain (`purs`, `spago`, `purs-tidy`) is pinned in `package.json` and installed with [pnpm](https://pnpm.io). `pnpm-workspace.yaml` already allows the `purescript` package to run its install script, which downloads the `purs` compiler.
+
+```bash
+pnpm install
+pnpm build   # spago build
+pnpm test    # spago test
+```
+
+### Editor setup
+
+For type information, errors and hovers in VS Code, use [Iris](https://iris-lang.com), the successor of purescript-analyzer:
+
+1. Install Iris following the [installation guide](https://iris-lang.com/docs/installation/).
+2. Install the Iris extension (`purefunctor.purescript-analyzer`) from the VS Code Marketplace, and disable `nwolverson.ide-purescript` to avoid duplicate diagnostics.
+3. Run `pnpm install` first: Iris prepares the workspace with the project's local `spago`, so it fails with "Workspace preparation failed" if `node_modules` is missing or outdated.
+
+See the [language server docs](https://iris-lang.com/docs/language-server/) for other editors.
 
 ## Credits
 

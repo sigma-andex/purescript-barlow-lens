@@ -2,6 +2,15 @@
 
 ## Unreleased
 - Update to VTAs
+- Add indexed traversals with `#` and `ibarlow`; nested indices are combined into tuples
+- Add `[key]` for `ix` (arrays, lists, maps, objects, ...) and `[?key]` for `at`
+- Allow `[field]` on records to select fields with special characters
+- Add `{a,b}` to zoom into a sub-record
+- Allow `+` (and `#`) on records whose fields all have the same type
+- Add type-changing `%1` / `%2` for `Tuple`
+- Add custom compile errors for common mistakes (unknown field, wrong type for `?`, `<`, `>`, `+`, invalid index, unterminated `[`/`{`, ...)
+- Add helpers `toListOf`, `firstOf`, `lastOf`, `lengthOf`, `has`, `hasn't`, `traverseOf`, `iover`, `itoListOf`, `ifoldMapOf`, `itraverseOf`
+- Breaking: `#`, `[` and `{` now end a field name in a path
 
 ## v1.0.0
 - Update to Purescript `0.15.10`
